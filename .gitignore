@@ -1,0 +1,16 @@
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Python, if scripts are added later
+__pycache__/
+*.pyc
+.venv/
+
+# Local/private config
+.env
+config.yaml
+
+# Logs
+logs/
