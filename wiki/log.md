@@ -28,3 +28,10 @@ workouts and files under `raw/imports/` remain the baseline import path.
 Added `trenere-coros-fetch` as the dedicated read-only COROS MCP retrieval and
 staging workflow. `trenere-import` remains responsible for converting staged
 workout source material into the markdown workout wiki.
+
+## [2026-05-24] lint | Wiki health check
+
+Checked index navigation, profile placeholders, injury notes, workout/import
+status, insight/block folders, and COROS sync notes. No contradictions, broken
+wiki links, orphan insight pages, stale zones, or unreflected injury flags found.
+Athlete onboarding and workout import remain not completed.
