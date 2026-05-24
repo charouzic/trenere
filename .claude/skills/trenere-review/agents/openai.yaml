@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere Review"
+  short_description: "Review recent endurance training"
+  default_prompt: "Use $trenere-review to review recent training and update the local Trenere wiki."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere Plan"
+  short_description: "Plan the next training week"
+  default_prompt: "Use $trenere-plan to create a practical next-week training plan from the local Trenere wiki."

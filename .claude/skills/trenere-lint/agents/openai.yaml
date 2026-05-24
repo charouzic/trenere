@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere Lint"
+  short_description: "Health-check coaching wiki"
+  default_prompt: "Use $trenere-lint to health-check the local Trenere wiki and apply safe maintenance fixes."

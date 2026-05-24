@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere Onboard"
+  short_description: "Create or refresh athlete profile"
+  default_prompt: "Use $trenere-onboard to set up or update the athlete profile in the local Trenere wiki."

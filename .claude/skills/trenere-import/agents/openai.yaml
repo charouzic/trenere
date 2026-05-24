@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere Import"
+  short_description: "Import workouts into the wiki"
+  default_prompt: "Use $trenere-import to import pasted workouts or files from raw/imports into the local Trenere wiki."
