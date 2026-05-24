@@ -69,8 +69,9 @@ files before changing anything.
 Use these skills for recurring work:
 
 - `/trenere-onboard` for athlete profile setup or updates.
-- `/trenere-import` for workout import from pasted summaries, files, or optional
-  read-only COROS MCP when available.
+- `/trenere-coros-fetch` for read-only COROS MCP data retrieval and staging.
+- `/trenere-import` for workout import from pasted summaries, staged files, or
+  optional read-only COROS MCP when available.
 - `/trenere-review` for recent training review.
 - `/trenere-plan` for next-week planning.
 - `/trenere-lint` for wiki health checks.

@@ -7,4 +7,5 @@ This page records the most recent manual import or optional external sync.
 - Optional external source used: COROS MCP configured in Codex as `coros`
   (`https://mcpeu.coros.com/mcp`), not yet used for a workout import
 - Notes: V1 does not require COROS, GitHub, or any external service. COROS MCP is
-  optional and read-only.
+  optional and read-only. Use `trenere-coros-fetch` to stage COROS data before
+  importing it into the wiki.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere COROS Fetch"
+  short_description: "Fetch read-only COROS training data"
+  default_prompt: "Use $trenere-coros-fetch to fetch read-only COROS training data and stage it for Trenere import."

@@ -11,6 +11,10 @@ Use this skill when the athlete provides recent workout summaries, places source
 files under `raw/imports/`, or explicitly wants optional COROS-sourced workouts
 imported if a COROS MCP is available.
 
+If the athlete first needs to retrieve data from COROS, use
+`/trenere-coros-fetch` to stage read-only COROS source material under
+`raw/imports/`, then return to this skill for wiki import.
+
 ## Inputs Required
 
 At least one source:
@@ -40,6 +44,7 @@ For each workout, capture whatever is available:
 - `wiki/workouts/README.md`
 - relevant existing `wiki/workouts/YYYY-MM.md` files
 - `raw/imports/` files when provided
+- `.claude/skills/trenere-coros-fetch/SKILL.md` when importing staged COROS data
 - `wiki/log.md`
 - `wiki/meta/last-sync.md`
 

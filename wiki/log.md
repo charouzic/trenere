@@ -22,3 +22,9 @@ recommendations.
 Configured Codex global MCP server `coros` at `https://mcpeu.coros.com/mcp` with
 OAuth. COROS remains optional and read-only for Trenere V1; manual pasted
 workouts and files under `raw/imports/` remain the baseline import path.
+
+## [2026-05-24] sync | COROS fetch skill added
+
+Added `trenere-coros-fetch` as the dedicated read-only COROS MCP retrieval and
+staging workflow. `trenere-import` remains responsible for converting staged
+workout source material into the markdown workout wiki.

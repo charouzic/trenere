@@ -56,9 +56,24 @@ Supported V1 sources:
 - files placed under `raw/imports/`
 - optional read-only COROS MCP if available
 
-If COROS is unavailable, continue with manual or file input. If COROS MCP is
-available in Codex, use it only as a read-only source for existing training data.
-Workout entries live under `wiki/workouts/YYYY-MM.md`.
+If COROS is unavailable, continue with manual or file input. Workout entries live
+under `wiki/workouts/YYYY-MM.md`.
+
+## Fetch From COROS
+
+Use `/trenere-coros-fetch` when you want to get read-only data from COROS MCP
+before importing, reviewing, or planning.
+
+Typical flow:
+
+```text
+Use $trenere-coros-fetch to fetch my COROS workouts from the past two weeks and stage them.
+Use $trenere-import to import the staged COROS workouts.
+Use $trenere-review to review recent training.
+```
+
+If COROS MCP is available in Codex, use it only as a read-only source for
+existing training data.
 
 Current optional COROS MCP setup for this machine:
 

@@ -40,3 +40,5 @@ page becomes important to future coaching decisions.
 - Recent workout import: none yet.
 - Current planning horizon: unknown.
 - Known safety flags: unknown.
+- Optional COROS MCP: configured as `coros`; use `trenere-coros-fetch` for
+  read-only staging before import.
