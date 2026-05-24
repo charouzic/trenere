@@ -17,13 +17,16 @@ The useful V1 loop is intentionally small:
 - pasted workout data
 - git
 
-No external service is required.
+No external service is required. COROS MCP may be used as an optional read-only
+import/analysis source when already configured, but manual paste and files under
+`raw/imports/` remain the baseline workflow.
 
 ## What Trenere Is Not
 
 Trenere is not an app, backend, database, metrics engine, custom MCP server,
-Streamlit app, AI coaching platform, COROS automation, or GitHub automation.
-COROS and GitHub may be optional future paths, but V1 must work without them.
+Streamlit app, AI coaching platform, COROS write automation, or GitHub
+automation. COROS and GitHub may be optional paths, but V1 must work without
+them.
 
 Trenere is not a doctor and does not diagnose injuries or medical conditions.
 
@@ -66,7 +69,8 @@ files before changing anything.
 Use these skills for recurring work:
 
 - `/trenere-onboard` for athlete profile setup or updates.
-- `/trenere-import` for workout import from pasted summaries or files.
+- `/trenere-import` for workout import from pasted summaries, files, or optional
+  read-only COROS MCP when available.
 - `/trenere-review` for recent training review.
 - `/trenere-plan` for next-week planning.
 - `/trenere-lint` for wiki health checks.

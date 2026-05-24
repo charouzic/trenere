@@ -54,10 +54,20 @@ Supported V1 sources:
 
 - manually pasted workout summaries
 - files placed under `raw/imports/`
-- optional COROS MCP if available
+- optional read-only COROS MCP if available
 
-If COROS is unavailable, continue with manual or file input. Workout entries live
-under `wiki/workouts/YYYY-MM.md`.
+If COROS is unavailable, continue with manual or file input. If COROS MCP is
+available in Codex, use it only as a read-only source for existing training data.
+Workout entries live under `wiki/workouts/YYYY-MM.md`.
+
+Current optional COROS MCP setup for this machine:
+
+```text
+Codex MCP name: coros
+URL: https://mcpeu.coros.com/mcp
+Auth: OAuth
+Mode: read-only import/analysis source
+```
 
 ## Weekly Review
 
@@ -94,7 +104,7 @@ private config, or accidental private dumps.
 - web app or Streamlit app
 - vector search
 - metrics engine
-- COROS automation
+- COROS write automation
 - GitHub automation
 - nutrition module
 - automated workout upload
