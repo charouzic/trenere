@@ -111,6 +111,10 @@ Public core repo:
 trenere/
   .claude/skills/
   AGENTS.md
+  wiki/principles/
+  wiki/workouts/
+  wiki/programming/
+  wiki/evidence/
   wiki/knowledge/
   templates/athlete-data/
 ```
