@@ -52,18 +52,49 @@ zones, injuries, recent plans, insights, or index hygiene.
 5. Verify insight pages are durable and linked or discoverable.
 6. Make small, obvious fixes when safe.
 7. Do not invent missing athlete facts.
-8. Append a `lint` entry to `wiki/log.md` with findings and fixes.
-9. Show changed files before committing if asked to commit.
+8. Prioritize findings by coaching impact, not by how easy they are to describe.
+9. Keep the final report concise: no more than 5 findings unless there is a
+   safety issue.
+10. Append a compact `lint` entry to `wiki/log.md` with findings and fixes.
+11. Show changed files before committing if asked to commit.
 
 ## Output Format
 
-Return:
+Return a short maintenance report, not a wall of text.
 
-- lint scope
-- findings
-- fixes applied
-- unresolved questions
-- suggested follow-up skill, if any
+Use this exact shape:
+
+```md
+Lint result: clean / needs attention / safety concern
+
+Scope: 1 sentence.
+
+Findings:
+- P0/P1/P2 — [file] — concise issue and why it matters.
+
+Fixes applied:
+- [file] — concise change.
+
+Unresolved:
+- Question or missing fact to ask later.
+
+Next:
+- One suggested next skill or action.
+```
+
+Rules:
+
+- Use `P0` only for safety or serious coaching-risk issues.
+- Use `P1` for contradictions, stale injury guidance, missing current-status
+  navigation, or bad planning directives.
+- Use `P2` for cleanup, missing links, stale wording, and minor hygiene.
+- Limit to 5 findings total. If more exist, report the 5 highest-impact findings
+  and say how many lower-priority items were omitted.
+- Omit empty sections except `Scope` and `Next`.
+- If no issues are found, say `Lint result: clean` and include one sentence on
+  residual risk, such as sparse data or no recent workouts.
+- Do not paste long excerpts from wiki files. Reference paths and summarize.
+- Keep `wiki/log.md` shorter than the final response: 2-5 bullets maximum.
 
 ## Edge Cases
 
@@ -84,7 +115,11 @@ Return:
 ```md
 ## [YYYY-MM-DD] lint | Wiki health check
 
-Short notes.
+Result: clean / needs attention / safety concern.
+
+- Fix: short note, if any.
+- Finding: short note, if any.
+- Next: short note.
 ```
 
 - Update `wiki/index.md` for navigation issues.
