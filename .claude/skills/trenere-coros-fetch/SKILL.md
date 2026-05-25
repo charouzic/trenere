@@ -49,8 +49,8 @@ athlete explicitly asked for no writes.
 
 - Preferred: configured COROS MCP tools in read-only mode.
 - Expected MCP server: `coros`, `https://mcpeu.coros.com/mcp`.
-- Optional web token: `COROS_ACCESS_TOKEN`, sent as `accesstoken:
-  $COROS_ACCESS_TOKEN`.
+- Optional web token: `COROS_ACCESS_TOKEN`, sent as header
+  `accesstoken: $COROS_ACCESS_TOKEN`.
 
 Never store tokens, cookies, auth headers, or session data. Treat `401`/`403` as
 expired auth and stop authenticated web calls.

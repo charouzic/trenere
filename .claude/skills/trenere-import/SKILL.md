@@ -1,118 +1,83 @@
 ---
 name: trenere-import
-description: Bring recent workouts into the markdown wiki from pasted summaries, raw files, or optional COROS data.
+description: Bring recent workouts into the markdown wiki from pasted summaries, raw files, or staged COROS data.
 ---
 
 # trenere-import
 
-## Athlete Data Root
-
-Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
-
-
 ## When To Use
 
-Use this skill when the athlete provides recent workout summaries, places source
-files under `{athlete-data-root}/raw/imports/`, or explicitly wants optional COROS-sourced workouts
-imported if a COROS MCP is available.
+Use when the athlete provides workout summaries, places files under
+`{athlete-data-root}/raw/imports/`, or wants staged COROS data imported.
 
-If the athlete first needs to retrieve data from COROS, use
-`/trenere-coros-fetch` to stage read-only COROS source material under
-`{athlete-data-root}/raw/imports/`, then return to this skill for wiki import.
+If COROS data still needs to be fetched, use `trenere-coros-fetch` first.
 
 ## Inputs Required
 
 At least one source:
 
-- manually pasted workout summaries
-- files placed under `{athlete-data-root}/raw/imports/`
-- optional read-only COROS MCP data if available, such as Codex MCP server
-  `coros` at `https://mcpeu.coros.com/mcp`
+- pasted workout summaries
+- files under `{athlete-data-root}/raw/imports/`
+- staged COROS source material
 
-For each workout, capture whatever is available:
-
-- date
-- sport/type
-- duration
-- distance
-- elevation
-- pace/HR/power if available
-- RPE/subjective notes if available
-- tags
+Capture what is available: date, sport/type, duration, distance, elevation,
+pace/HR/power, RPE/notes, and tags.
 
 ## Files To Read
 
 - `AGENTS.md`
 - `wiki/index.md`
+- `wiki/workouts/README.md`
 - `{athlete-data-root}/wiki/profile/athlete.md`
 - `{athlete-data-root}/wiki/profile/coaching-directives.md`
-- `wiki/workouts/README.md`
-- relevant existing `{athlete-data-root}/wiki/workouts/YYYY-MM.md` files
-- `{athlete-data-root}/raw/imports/` files when provided
-- `.claude/skills/trenere-coros-fetch/SKILL.md` when importing staged COROS data
+- existing `{athlete-data-root}/wiki/workouts/YYYY-MM.md`
+- provided files under `{athlete-data-root}/raw/imports/`
 - `{athlete-data-root}/wiki/log.md`
 - `{athlete-data-root}/wiki/meta/last-sync.md`
+
+Resolve `{athlete-data-root}` via `AGENTS.md`.
 
 ## Files To Update
 
 - `{athlete-data-root}/wiki/workouts/YYYY-MM.md`
-- `wiki/index.md`
 - `{athlete-data-root}/wiki/log.md`
-- `{athlete-data-root}/wiki/meta/last-sync.md` if an import or sync occurred
+- `{athlete-data-root}/wiki/meta/last-sync.md`
 
 ## Steps
 
 1. Follow the session start routine in `AGENTS.md`.
-2. Identify the import source: pasted text, files under `{athlete-data-root}/raw/imports/`, or
-   optional COROS MCP.
-3. If COROS is requested and available, use it only as a read-only source for
-   existing workout data. Do not assume write access or attempt to create
-   calendar entries or workouts.
-4. If COROS is unavailable or not configured, continue with manual/file input.
-5. Parse each workout conservatively. Preserve uncertainty.
-6. Create or update the month file `{athlete-data-root}/wiki/workouts/YYYY-MM.md`.
-7. Append entries using the format from `wiki/workouts/README.md`.
-8. Use `unknown`, `not provided`, or `estimated` for missing or unclear fields.
-9. Add tags only when supported by the supplied data.
-10. Avoid duplicate entries. If a likely duplicate exists, merge missing fields
-   rather than adding a second copy.
-11. Update `{athlete-data-root}/wiki/meta/last-sync.md` with source and date.
-12. Update `wiki/index.md` current status.
-13. Append an `import` or `sync` entry to `{athlete-data-root}/wiki/log.md`.
-14. Show changed files before committing if asked to commit.
+2. Identify the source: pasted text, raw import files, or staged COROS data.
+3. Parse conservatively and preserve uncertainty.
+4. Create or update the monthly workout file.
+5. Use the format in `wiki/workouts/README.md`.
+6. Use `unknown`, `not provided`, or `estimated` for missing fields.
+7. Add tags only when supported by data.
+8. Merge likely duplicates instead of creating duplicate entries.
+9. Update last-sync and append a compact private log entry.
 
-When the source is COROS workout records that were just fetched by
-`trenere-ask` or `trenere-coros-fetch`, do not treat "summary only" as complete
-unless the athlete explicitly asked for no file writes. Import usable workouts
-into the monthly workout wiki so coaching memory survives the chat.
+If COROS records were just fetched, import usable workouts in the same turn
+unless the athlete explicitly asked for no writes.
 
 ## Output Format
 
-Return:
-
 - source used
-- workouts imported or updated
+- workouts imported/updated
 - files changed
-- fields that were missing or estimated
-- any injury/fatigue flags noticed
-- recommended next skill, usually `/trenere-review`
+- missing or estimated fields
+- injury/fatigue flags noticed
+- next skill, usually `trenere-review`
 
 ## Edge Cases
 
-- If dates are missing, ask for dates before writing month files.
-- If units are ambiguous, record the original text and mark derived values as
-  estimated.
-- If the workout appears duplicated, do not create a duplicate.
-- If workout data includes medical symptoms, apply the safety boundary from
-  `AGENTS.md`.
-- If raw files include secrets, auth tokens, or private config, do not commit
-  them and warn the athlete.
-- If COROS MCP auth expires or tools are unavailable, fall back to pasted
-  workouts or files under `{athlete-data-root}/raw/imports/`.
+- Missing dates: ask before writing month files.
+- Ambiguous units: preserve original text and mark derived values estimated.
+- Secrets in raw files: do not commit them; warn the athlete.
+- Medical symptoms: apply `AGENTS.md` safety boundary.
+- COROS unavailable: continue with pasted or file input.
 
 ## Git/Log/Index Update Rules
 
-- Append to `{athlete-data-root}/wiki/log.md` using:
+Log format:
 
 ```md
 ## [YYYY-MM-DD] import | Recent workouts imported
@@ -120,12 +85,4 @@ Return:
 Short notes.
 ```
 
-- Update `wiki/index.md` when recent workout import status changes.
-- Update `{athlete-data-root}/wiki/meta/last-sync.md` for any import source, including manual paste.
-- Commit only after meaningful updates.
-- Default commit:
-
-```bash
-git add .
-git commit -m "trenere-import: import workouts YYYY-MM-DD"
-```
+Commit only meaningful updates in the private athlete-data repo.
