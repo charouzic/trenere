@@ -14,8 +14,8 @@ Before reading or writing private coaching data, resolve `{athlete-data-root}` u
 
 Use this skill when the athlete asks to get data from COROS, sync recent COROS
 workouts, inspect COROS recovery/fitness metrics, download original activity
-files, or stage COROS data before running `/trenere-import`, `/trenere-review`,
-or `/trenere-plan`.
+files, inspect planned workout targets, or stage COROS data before running
+`/trenere-import`, `/trenere-review`, or `/trenere-plan`.
 
 This skill is read-only. It does not write to COROS, create workouts, update a
 COROS calendar, or require COROS for the rest of Trenere to work.
@@ -23,7 +23,8 @@ COROS calendar, or require COROS for the rest of Trenere to work.
 ## Inputs Required
 
 - requested data type: workouts, sleep, HRV, recovery, fitness assessment,
-  training load, resting HR, average HR, stress, devices, or training schedule
+  training load, resting HR, average HR, stress, devices, training schedule, or
+  planned workout target zones
 - date range or recent-day count when relevant
 - optional sport filter for workouts
 - whether to only summarize data or also stage source notes under `{athlete-data-root}/raw/imports/`
@@ -94,6 +95,8 @@ queries include:
 - average heart rate
 - stress level
 - training schedule
+- planned workout target zones, when exposed by the current connector or by
+  authenticated COROS web responses supplied by the athlete
 - devices
 
 Do not assume every tool is available. If a requested data type is unavailable,
@@ -139,6 +142,41 @@ developer-data messages. FIT is usually the richer device-native source.
 Use original-file-derived lap/block data for execution review when available,
 and mark whether the granularity came from FIT, fallback TCX, or MCP.
 
+## Planned Target Zone Flow
+
+COROS MCP training schedule may only return summary fields such as session name,
+estimated duration, distance, and load. Do not claim target HR, pace, power, or
+step ranges are available unless they are present in the returned data.
+
+For planned workout targets, preserve these fields when available:
+
+- `planId`, `programId`, `labelId`, `sportType`, date, and session name
+- `exercises` or workout steps, including group/repeat structure
+- `exerciseType`, `targetType`, `targetValue`, `restType`, and `restValue`
+- `intensityType`, `hrType`, `intensityValue`, `intensityValueExtend`,
+  `intensityPercent`, `intensityPercentExtend`, `isIntensityPercent`, and
+  `intensityCustom`
+- unit and zone context needed to interpret percent-based targets
+
+Known COROS web app concepts observed in the Training Hub bundle:
+
+- `targetType`: `2=time`, `4=heart`, `5=distance`, `6=load`
+- `intensityType`: `2=heart`, `3=pace`, `4=speed`, `6=power`, `7=cadence`,
+  `11=RPE`
+- plan/program detail endpoints used by the web app include
+  `/training/plan/detail` and `/training/program/detail`
+
+Those web endpoints require authenticated COROS web access and are outside the
+read-only MCP contract unless the current environment already exposes them or
+the athlete supplies an authenticated response/export. Never store auth tokens,
+cookies, or session headers. If only MCP schedule summaries are available, stage
+the planned workout summary and explicitly mark target zones as `not provided`.
+
+When both planned targets and completed FIT/lap data are available, stage both
+sources and compare planned blocks to actual execution conservatively. If FIT
+laps do not match planned blocks exactly, say so instead of forcing a false
+interval-by-interval comparison.
+
 ## Steps
 
 1. Follow the session start routine in `AGENTS.md`.
@@ -158,20 +196,23 @@ and mark whether the granularity came from FIT, fallback TCX, or MCP.
 10. Include source, fetch date, date range, query parameters, returned records,
     label IDs, FIT download status, and FIT-derived lap summaries when available
     in the staged file.
-11. If the returned data is workout records and includes enough fields, import or
+11. If planned target zones are requested, fetch and stage any available
+    schedule summaries and target fields. Mark target zones `not provided` when
+    MCP/web data does not expose them.
+12. If the returned data is workout records and includes enough fields, import or
    update entries in `{athlete-data-root}/wiki/workouts/YYYY-MM.md` using the
    public workout format.
-12. Use `not provided` or `unknown` for missing fields. Do not invent elevation,
+13. Use `not provided` or `unknown` for missing fields. Do not invent elevation,
    RPE, subjective notes, HRV, resting HR, or sleep.
-13. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch
+14. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch
     date, range, staged file path, FIT file paths when available, and import
     status.
-14. Append a `sync` or `import` entry to `{athlete-data-root}/wiki/log.md`.
-15. Recommend the next skill:
+15. Append a `sync` or `import` entry to `{athlete-data-root}/wiki/log.md`.
+16. Recommend the next skill:
     - `/trenere-review` to analyze imported data
     - `/trenere-plan` when the fetched data is enough for planning context
     - `/trenere-import` only if staging succeeded but import could not be done
-16. Show changed files before committing if asked to commit.
+17. Show changed files before committing if asked to commit.
 
 ## Staged File Format
 
@@ -201,6 +242,12 @@ available.
 FIT files downloaded or attempted. Include `labelId`, `sportType`, file path,
 download status, parser/message counts, and lap summaries when available.
 
+## Planned Targets
+
+Schedule, plan, or program target fields returned by COROS. Include planned
+steps, target type/value, intensity type/ranges, units, and missing target-zone
+notes. Use `not provided` when only schedule summaries are available.
+
 ## Import Notes
 
 Notes for `/trenere-import`, including missing fields, likely duplicates, and
@@ -218,6 +265,7 @@ Return:
 - workout wiki file updated, if imported
 - FIT file paths and lap/record counts, if downloaded; TCX path only if FIT was
   unavailable or deliberately used as fallback
+- planned target-zone fields found or `not provided`
 - important missing fields or uncertainty
 - safety/fatigue flags noticed
 - recommended next skill
