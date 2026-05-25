@@ -5,6 +5,11 @@ description: Review recent training and decide what should influence future plan
 
 # trenere-review
 
+## Athlete Data Root
+
+Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
+
+
 ## When To Use
 
 Use this skill after workouts have been imported, before planning a new week, or
@@ -13,7 +18,7 @@ when the athlete asks what recent training means.
 ## Inputs Required
 
 - review window, if specified
-- recent workouts in `wiki/workouts/`
+- recent workouts in `{athlete-data-root}/wiki/workouts/`
 - athlete context from profile files
 - subjective context from the athlete, if provided
 
@@ -24,21 +29,21 @@ usually the last 7-14 days.
 
 - `AGENTS.md`
 - `wiki/index.md`
-- `wiki/profile/athlete.md`
-- `wiki/profile/injury-history.md`
-- `wiki/profile/preferences.md`
-- `wiki/profile/coaching-directives.md`
-- recent `wiki/workouts/YYYY-MM.md` files
-- `wiki/insights/README.md`
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/injury-history.md`
+- `{athlete-data-root}/wiki/profile/preferences.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
+- recent `{athlete-data-root}/wiki/workouts/YYYY-MM.md` files
+- `{athlete-data-root}/wiki/insights/README.md`
 - recent insight pages if relevant
-- `wiki/log.md`
+- `{athlete-data-root}/wiki/log.md`
 
 ## Files To Update
 
-- `wiki/log.md`
-- `wiki/insights/*.md` only for durable, athlete-specific conclusions
+- `{athlete-data-root}/wiki/log.md`
+- `{athlete-data-root}/wiki/insights/*.md` only for durable, athlete-specific conclusions
 - `wiki/index.md` if current status changes
-- `wiki/profile/coaching-directives.md` only when a durable pattern should guide
+- `{athlete-data-root}/wiki/profile/coaching-directives.md` only when a durable pattern should guide
   future planning
 
 ## Steps
@@ -52,10 +57,10 @@ usually the last 7-14 days.
 6. State what looks risky, including load spikes, too much intensity, poor
    recovery, soreness, illness, or injury flags.
 7. Explain what should affect next week.
-8. Decide whether any durable insight belongs in `wiki/insights/`.
+8. Decide whether any durable insight belongs in `{athlete-data-root}/wiki/insights/`.
 9. If creating an insight, include conclusion, evidence, planning implication,
    and date.
-10. Append a `review` entry to `wiki/log.md`.
+10. Append a `review` entry to `{athlete-data-root}/wiki/log.md`.
 11. Show changed files before committing if asked to commit.
 
 ## Output Format
@@ -84,7 +89,7 @@ Return:
 
 ## Git/Log/Index Update Rules
 
-- Append to `wiki/log.md` using:
+- Append to `{athlete-data-root}/wiki/log.md` using:
 
 ```md
 ## [YYYY-MM-DD] review | Recent training reviewed
@@ -92,7 +97,7 @@ Return:
 Short notes.
 ```
 
-- Create `wiki/insights/YYYY-MM-DD-short-title.md` only for durable insights.
+- Create `{athlete-data-root}/wiki/insights/YYYY-MM-DD-short-title.md` only for durable insights.
 - Update `wiki/index.md` if a new insight or major status change should be
   discoverable.
 - Commit only after meaningful updates.

@@ -14,3 +14,15 @@ config.yaml
 
 # Logs
 logs/
+
+# Trenere private athlete data
+.trenere-athlete-data
+/athlete-data/
+/trenere-athlete-data/
+/raw/
+/wiki/profile/
+/wiki/log.md
+/wiki/meta/
+/wiki/blocks/
+/wiki/insights/
+/wiki/workouts/[0-9][0-9][0-9][0-9]-[0-9][0-9].md

@@ -21,6 +21,46 @@ No external service is required. COROS MCP may be used as an optional read-only
 import/analysis source when already configured, but manual paste and files under
 `raw/imports/` remain the baseline workflow.
 
+## Public Core And Private Athlete Data
+
+This repository is the public-safe Trenere core. It should contain skills,
+workflow docs, public training knowledge, public workout/session conventions, and
+templates.
+
+Athlete-specific data belongs outside this public core. The default local private
+data repo is:
+
+```text
+../trenere-athlete-data
+```
+
+Agents should resolve the athlete data root in this order:
+
+1. `TRENERE_ATHLETE_DATA` environment variable, if set.
+2. Path stored in `.trenere-athlete-data`, if that ignored local file exists.
+3. `../trenere-athlete-data`.
+
+Private athlete-data paths are relative to that root:
+
+- `wiki/profile/`
+- `wiki/log.md`
+- `wiki/workouts/YYYY-MM.md`
+- `wiki/blocks/`
+- `wiki/insights/`
+- `wiki/meta/`
+- `raw/imports/`
+
+Public core paths stay in this repo:
+
+- `.claude/skills/`
+- `wiki/index.md`
+- `wiki/knowledge/`
+- `wiki/workouts/README.md`
+- `templates/athlete-data/`
+
+Do not commit private athlete data to this public core. Commit athlete data only
+inside the private athlete-data repo.
+
 ## What Trenere Is Not
 
 Trenere is not an app, backend, database, metrics engine, custom MCP server,
@@ -44,10 +84,11 @@ uncertainty.
 For coaching tasks:
 
 1. Read `wiki/index.md`.
-2. Read `wiki/profile/athlete.md`.
-3. Read `wiki/profile/coaching-directives.md`.
-4. Read the relevant `SKILL.md`.
-5. Then proceed.
+2. Resolve the athlete data root.
+3. Read `{athlete-data-root}/wiki/profile/athlete.md`.
+4. Read `{athlete-data-root}/wiki/profile/coaching-directives.md`.
+5. Read the relevant `SKILL.md`.
+6. Then proceed.
 
 For repository-maintenance tasks, still check this file and the relevant target
 files before changing anything.
@@ -58,11 +99,13 @@ files before changing anything.
 - Prefer clear summaries over raw data dumps.
 - Use `unknown`, `not provided`, or `estimated` when data is missing.
 - Do not invent athlete-specific facts.
-- Use `wiki/index.md` as the navigation layer.
-- Use `wiki/log.md` as the chronological record.
-- Use `wiki/insights/` only for durable, athlete-specific conclusions likely to
-  affect future planning.
-- Minor thoughts belong in `wiki/log.md`, not in a new insight page.
+- Use public `wiki/index.md` as the core navigation layer.
+- Use private `{athlete-data-root}/wiki/log.md` as the chronological coaching
+  record.
+- Use private `{athlete-data-root}/wiki/insights/` only for durable,
+  athlete-specific conclusions likely to affect future planning.
+- Minor thoughts belong in private `{athlete-data-root}/wiki/log.md`, not in a
+  new insight page.
 
 ## Skill Usage
 
@@ -95,11 +138,13 @@ injury flags are present.
 ## Git Rules
 
 - Use local git.
-- Commit locally after meaningful changes.
+- Commit locally after meaningful changes, in the correct repo.
 - Do not push automatically.
 - Show changed files before committing.
 - Never commit secrets, config files, logs, auth tokens, or accidental private
   dumps.
+- Public core changes are committed in this repo.
+- Athlete-specific changes are committed in the private athlete-data repo.
 - Default commit format:
 
 ```bash

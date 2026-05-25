@@ -5,6 +5,11 @@ description: Set up or update the athlete profile using minimal or optional deep
 
 # trenere-onboard
 
+## Athlete Data Root
+
+Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
+
+
 ## When To Use
 
 Use this skill when starting Trenere for a new athlete, refreshing the athlete
@@ -38,20 +43,20 @@ Do not require COROS, GitHub, zones from a watch, or full training history.
 
 - `AGENTS.md`
 - `wiki/index.md`
-- `wiki/profile/athlete.md`
-- `wiki/profile/preferences.md`
-- `wiki/profile/injury-history.md`
-- `wiki/profile/coaching-directives.md`
-- `wiki/log.md`
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/preferences.md`
+- `{athlete-data-root}/wiki/profile/injury-history.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
+- `{athlete-data-root}/wiki/log.md`
 
 ## Files To Update
 
-- `wiki/profile/athlete.md`
-- `wiki/profile/preferences.md`
-- `wiki/profile/injury-history.md`
-- `wiki/profile/coaching-directives.md`
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/preferences.md`
+- `{athlete-data-root}/wiki/profile/injury-history.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
 - `wiki/index.md`
-- `wiki/log.md`
+- `{athlete-data-root}/wiki/log.md`
 
 ## Steps
 
@@ -68,7 +73,7 @@ Do not require COROS, GitHub, zones from a watch, or full training history.
 8. Update `coaching-directives.md` only for standing rules that should guide
    future reviews or plans.
 9. Update `wiki/index.md` current status fields.
-10. Append an `onboard` entry to `wiki/log.md`.
+10. Append an `onboard` entry to `{athlete-data-root}/wiki/log.md`.
 11. Show changed files before committing if asked to commit.
 
 ## Output Format
@@ -97,7 +102,7 @@ Return:
 
 ## Git/Log/Index Update Rules
 
-- Append to `wiki/log.md` using:
+- Append to `{athlete-data-root}/wiki/log.md` using:
 
 ```md
 ## [YYYY-MM-DD] onboard | Profile updated

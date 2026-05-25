@@ -5,6 +5,11 @@ description: General Trenere entrypoint for questions, uncertainty, training-loa
 
 # trenere-ask
 
+## Athlete Data Root
+
+Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
+
+
 ## When To Use
 
 Use this skill when the athlete is unsure what to do, asks a general coaching
@@ -36,18 +41,18 @@ Always read:
 
 - `AGENTS.md`
 - `wiki/index.md`
-- `wiki/profile/athlete.md`
-- `wiki/profile/coaching-directives.md`
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
 
 Read as needed:
 
-- `wiki/profile/injury-history.md`
-- `wiki/profile/preferences.md`
-- `wiki/log.md`
-- recent `wiki/workouts/YYYY-MM.md`
-- `wiki/meta/last-sync.md`
+- `{athlete-data-root}/wiki/profile/injury-history.md`
+- `{athlete-data-root}/wiki/profile/preferences.md`
+- `{athlete-data-root}/wiki/log.md`
+- recent `{athlete-data-root}/wiki/workouts/YYYY-MM.md`
+- `{athlete-data-root}/wiki/meta/last-sync.md`
 - relevant skill files under `.claude/skills/trenere-*/SKILL.md`
-- `wiki/insights/` pages
+- `{athlete-data-root}/wiki/insights/` pages
 - `wiki/knowledge/training-principles.md`
 - `wiki/knowledge/session-library.md`
 
@@ -58,9 +63,9 @@ Usually none.
 Update files only when the athlete asks for a change or the answer naturally
 creates useful coaching memory:
 
-- `wiki/log.md` for meaningful advice, decisions, or handoffs
-- `wiki/profile/coaching-directives.md` for durable planning rules
-- `wiki/profile/injury-history.md` for athlete-reported injury flags
+- `{athlete-data-root}/wiki/log.md` for meaningful advice, decisions, or handoffs
+- `{athlete-data-root}/wiki/profile/coaching-directives.md` for durable planning rules
+- `{athlete-data-root}/wiki/profile/injury-history.md` for athlete-reported injury flags
 - `wiki/index.md` if current status changes
 - other wiki pages only when a specific routed workflow requires them
 
@@ -156,14 +161,14 @@ If changing files, include:
 - If the athlete asks for broad life, nutrition, or medical advice outside
   Trenere's scope, keep the answer limited and route back to training context.
 - If the athlete wants a file update but the change is not durable, prefer a
-  short `wiki/log.md` note instead of creating a new page.
+  short `{athlete-data-root}/wiki/log.md` note instead of creating a new page.
 
 ## Git/Log/Index Update Rules
 
 - Do not update files for ordinary Q&A.
-- Append to `wiki/log.md` only for meaningful coaching decisions, load
+- Append to `{athlete-data-root}/wiki/log.md` only for meaningful coaching decisions, load
   adjustments, or workflow handoffs that should be remembered.
-- If appending to `wiki/log.md`, use:
+- If appending to `{athlete-data-root}/wiki/log.md`, use:
 
 ```md
 ## [YYYY-MM-DD] review | Coaching question answered

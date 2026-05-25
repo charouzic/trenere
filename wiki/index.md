@@ -1,29 +1,27 @@
 # Trenere Wiki Index
 
-This is the navigation layer for the local coaching wiki. Update it whenever a
-page becomes important to future coaching decisions.
+This is the public-safe navigation layer for the Trenere core. Athlete-specific
+coaching memory lives in the private athlete-data repo, defaulting to
+`../trenere-athlete-data`.
 
 ## Start Here
 
 - [Trenere Ask Skill](../.claude/skills/trenere-ask/SKILL.md) — general
   entrypoint for questions, uncertainty, advice, load adjustments, and routing.
-- [Athlete Profile](profile/athlete.md) — current goal, training context, weekly
-  volume, zones, constraints, and recent training summary.
-- [Coaching Directives](profile/coaching-directives.md) — standing rules the
-  coach should follow when reviewing or planning.
-- [Preferences](profile/preferences.md) — schedule, communication, surface,
-  session, and planning preferences.
-- [Injury History](profile/injury-history.md) — current niggles, prior injury
-  notes, and safety flags.
-- [Training Log](log.md) — chronological record of onboard, import, review,
-  plan, lint, insight, and sync changes.
+- [Athlete Data Template](../templates/athlete-data/README.md) — bootstrap
+  structure for the private athlete-data repo.
+- Private athlete profile — `{athlete-data-root}/wiki/profile/athlete.md`.
+- Private coaching directives —
+  `{athlete-data-root}/wiki/profile/coaching-directives.md`.
+- Private training log — `{athlete-data-root}/wiki/log.md`.
 
 ## Training Memory
 
 - [Workouts](workouts/README.md) — workout file conventions and month-level
-  pages.
-- [Blocks](blocks/README.md) — training block notes and planned cycles.
-- [Insights](insights/README.md) — durable athlete-specific conclusions.
+  pages. Actual monthly athlete workout files belong in the private
+  athlete-data repo.
+- Private blocks — `{athlete-data-root}/wiki/blocks/`.
+- Private insights — `{athlete-data-root}/wiki/insights/`.
 
 ## Knowledge
 
@@ -31,10 +29,10 @@ page becomes important to future coaching decisions.
   principles used in Trenere decisions.
 - [Session Library](knowledge/session-library.md) — reusable workout patterns.
 
-## Meta
+## Private Meta
 
-- [Last Sync](meta/last-sync.md) — notes about the most recent manual or
-  optional external sync.
+- Last sync — `{athlete-data-root}/wiki/meta/last-sync.md`.
+- Raw imports — `{athlete-data-root}/raw/imports/`.
 
 ## Current Status
 
@@ -42,5 +40,5 @@ page becomes important to future coaching decisions.
 - Recent workout import: none yet.
 - Current planning horizon: unknown.
 - Known safety flags: unknown.
-- Optional COROS MCP: configured as `coros`; use `trenere-coros-fetch` for
-  read-only staging before import.
+- Optional COROS MCP: can be configured locally as `coros`; use
+  `trenere-coros-fetch` for read-only staging before import.

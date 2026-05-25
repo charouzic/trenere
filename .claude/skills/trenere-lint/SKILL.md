@@ -5,6 +5,11 @@ description: Health-check the coaching wiki for contradictions, stale claims, mi
 
 # trenere-lint
 
+## Athlete Data Root
+
+Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
+
+
 ## When To Use
 
 Use this skill when the wiki may be stale, before important planning, after many
@@ -20,24 +25,24 @@ zones, injuries, recent plans, insights, or index hygiene.
 
 - `AGENTS.md`
 - `wiki/index.md`
-- `wiki/log.md`
-- `wiki/profile/athlete.md`
-- `wiki/profile/injury-history.md`
-- `wiki/profile/preferences.md`
-- `wiki/profile/coaching-directives.md`
+- `{athlete-data-root}/wiki/log.md`
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/injury-history.md`
+- `{athlete-data-root}/wiki/profile/preferences.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
 - `wiki/workouts/README.md`
-- recent `wiki/workouts/YYYY-MM.md` files
-- `wiki/insights/README.md`
+- recent `{athlete-data-root}/wiki/workouts/YYYY-MM.md` files
+- `{athlete-data-root}/wiki/insights/README.md`
 - insight pages
-- `wiki/blocks/README.md`
+- `{athlete-data-root}/wiki/blocks/README.md`
 - block pages
-- `wiki/meta/last-sync.md`
+- `{athlete-data-root}/wiki/meta/last-sync.md`
 
 ## Files To Update
 
-- `wiki/log.md`
+- `{athlete-data-root}/wiki/log.md`
 - `wiki/index.md` for missing or stale navigation entries
-- `wiki/profile/coaching-directives.md` when repeated patterns should become
+- `{athlete-data-root}/wiki/profile/coaching-directives.md` when repeated patterns should become
   standing directives
 - affected wiki pages when fixing clear inconsistencies
 
@@ -55,7 +60,7 @@ zones, injuries, recent plans, insights, or index hygiene.
 8. Prioritize findings by coaching impact, not by how easy they are to describe.
 9. Keep the final report concise: no more than 5 findings unless there is a
    safety issue.
-10. Append a compact `lint` entry to `wiki/log.md` with findings and fixes.
+10. Append a compact `lint` entry to `{athlete-data-root}/wiki/log.md` with findings and fixes.
 11. Show changed files before committing if asked to commit.
 
 ## Output Format
@@ -94,7 +99,7 @@ Rules:
 - If no issues are found, say `Lint result: clean` and include one sentence on
   residual risk, such as sparse data or no recent workouts.
 - Do not paste long excerpts from wiki files. Reference paths and summarize.
-- Keep `wiki/log.md` shorter than the final response: 2-5 bullets maximum.
+- Keep `{athlete-data-root}/wiki/log.md` shorter than the final response: 2-5 bullets maximum.
 
 ## Edge Cases
 
@@ -104,13 +109,13 @@ Rules:
   than replacing them.
 - If injury notes suggest ongoing risk, ensure `coaching-directives.md` reflects
   conservative planning.
-- If an insight is not durable, move the idea into `wiki/log.md` or mark it for
+- If an insight is not durable, move the idea into `{athlete-data-root}/wiki/log.md` or mark it for
   review instead of deleting without user approval.
 - If private data appears in raw imports, do not commit it.
 
 ## Git/Log/Index Update Rules
 
-- Append to `wiki/log.md` using:
+- Append to `{athlete-data-root}/wiki/log.md` using:
 
 ```md
 ## [YYYY-MM-DD] lint | Wiki health check

@@ -5,6 +5,11 @@ description: Plan the next training week from the athlete profile, recent traini
 
 # trenere-plan
 
+## Athlete Data Root
+
+Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
+
+
 ## When To Use
 
 Use this skill when the athlete asks for next-week planning, a near-term schedule,
@@ -25,22 +30,22 @@ If some inputs are missing, use existing wiki context and mark assumptions.
 
 - `AGENTS.md`
 - `wiki/index.md`
-- `wiki/profile/athlete.md`
-- `wiki/profile/injury-history.md`
-- `wiki/profile/preferences.md`
-- `wiki/profile/coaching-directives.md`
-- recent `wiki/workouts/YYYY-MM.md` files
-- recent `wiki/insights/*.md` if relevant
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/injury-history.md`
+- `{athlete-data-root}/wiki/profile/preferences.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
+- recent `{athlete-data-root}/wiki/workouts/YYYY-MM.md` files
+- recent `{athlete-data-root}/wiki/insights/*.md` if relevant
 - `wiki/knowledge/session-library.md`
 - `wiki/knowledge/training-principles.md`
-- `wiki/log.md`
+- `{athlete-data-root}/wiki/log.md`
 
 ## Files To Update
 
-- `wiki/log.md`
-- `wiki/blocks/*.md` only when planning or updating a meaningful block
+- `{athlete-data-root}/wiki/log.md`
+- `{athlete-data-root}/wiki/blocks/*.md` only when planning or updating a meaningful block
 - `wiki/index.md` if planning horizon changes
-- `wiki/profile/coaching-directives.md` only when a durable directive emerges
+- `{athlete-data-root}/wiki/profile/coaching-directives.md` only when a durable directive emerges
 
 ## Steps
 
@@ -54,7 +59,7 @@ If some inputs are missing, use existing wiki context and mark assumptions.
 8. Include fallback rules if tired, stressed, sore, sick, or short on time.
 9. Specify what feedback to report after key sessions.
 10. Avoid aggressive progressions unless recent training supports them.
-11. Append a `plan` entry to `wiki/log.md`.
+11. Append a `plan` entry to `{athlete-data-root}/wiki/log.md`.
 12. Update `wiki/index.md` current planning horizon.
 13. Show changed files before committing if asked to commit.
 
@@ -92,7 +97,7 @@ Return:
 
 ## Git/Log/Index Update Rules
 
-- Append to `wiki/log.md` using:
+- Append to `{athlete-data-root}/wiki/log.md` using:
 
 ```md
 ## [YYYY-MM-DD] plan | Next week planned

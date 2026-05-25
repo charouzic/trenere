@@ -5,6 +5,11 @@ description: Fetch read-only training data from the configured COROS MCP server 
 
 # trenere-coros-fetch
 
+## Athlete Data Root
+
+Before reading or writing private coaching data, resolve `{athlete-data-root}` using `AGENTS.md`: `TRENERE_ATHLETE_DATA`, then `.trenere-athlete-data`, then `../trenere-athlete-data`. Public core files are read from this repository; athlete-specific profile, logs, workouts, imports, blocks, insights, and sync notes are read or written under `{athlete-data-root}`. Commit public core changes in this repo and private athlete-data changes from `{athlete-data-root}`.
+
+
 ## When To Use
 
 Use this skill when the athlete asks to get data from COROS, sync recent COROS
@@ -20,7 +25,7 @@ COROS calendar, or require COROS for the rest of Trenere to work.
   training load, resting HR, average HR, stress, devices, or training schedule
 - date range or recent-day count when relevant
 - optional sport filter for workouts
-- whether to only summarize data or also stage source notes under `raw/imports/`
+- whether to only summarize data or also stage source notes under `{athlete-data-root}/raw/imports/`
 
 If no date range is provided, default to the last 14 days for workouts and the
 last 7 days for health/recovery trends.
@@ -29,21 +34,21 @@ last 7 days for health/recovery trends.
 
 - `AGENTS.md`
 - `wiki/index.md`
-- `wiki/profile/athlete.md`
-- `wiki/profile/coaching-directives.md`
-- `wiki/meta/last-sync.md`
-- `wiki/log.md`
-- `raw/imports/README.md`
+- `{athlete-data-root}/wiki/profile/athlete.md`
+- `{athlete-data-root}/wiki/profile/coaching-directives.md`
+- `{athlete-data-root}/wiki/meta/last-sync.md`
+- `{athlete-data-root}/wiki/log.md`
+- `{athlete-data-root}/raw/imports/README.md`
 - `.claude/skills/trenere-import/SKILL.md` if the next step is wiki import
 
 ## Files To Update
 
-- `raw/imports/coros/YYYY-MM-DD-*.md` when staging COROS source material
-- `wiki/meta/last-sync.md` when data is fetched or staged
-- `wiki/log.md`
+- `{athlete-data-root}/raw/imports/coros/YYYY-MM-DD-*.md` when staging COROS source material
+- `{athlete-data-root}/wiki/meta/last-sync.md` when data is fetched or staged
+- `{athlete-data-root}/wiki/log.md`
 - `wiki/index.md` only if current import/sync status should change
 
-Do not update `wiki/workouts/YYYY-MM.md` directly unless the user explicitly asks
+Do not update `{athlete-data-root}/wiki/workouts/YYYY-MM.md` directly unless the user explicitly asks
 to fetch and import in one pass. Prefer handing staged COROS source material to
 `/trenere-import`.
 
@@ -91,21 +96,21 @@ say so and offer the closest available read-only alternative.
 4. Preserve raw values and uncertainty. Do not invent missing fields.
 5. Summarize the fetched data in plain language.
 6. If staging source material, create a dated markdown file under
-   `raw/imports/coros/`.
+   `{athlete-data-root}/raw/imports/coros/`.
 7. Include source, fetch date, date range, query parameters, and returned records
    in the staged file.
-8. Update `wiki/meta/last-sync.md` with the COROS fetch date, range, and staged
+8. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch date, range, and staged
    file path.
-9. Append a `sync` entry to `wiki/log.md`.
+9. Append a `sync` entry to `{athlete-data-root}/wiki/log.md`.
 10. Recommend the next skill:
-    - `/trenere-import` to convert staged workout data into `wiki/workouts/`
+    - `/trenere-import` to convert staged workout data into `{athlete-data-root}/wiki/workouts/`
     - `/trenere-review` to analyze already-imported data
     - `/trenere-plan` when the fetched data is enough for planning context
 11. Show changed files before committing if asked to commit.
 
 ## Staged File Format
 
-Use this format for files under `raw/imports/coros/`:
+Use this format for files under `{athlete-data-root}/raw/imports/coros/`:
 
 ```md
 # COROS Fetch — YYYY-MM-DD
@@ -147,7 +152,7 @@ Return:
 ## Edge Cases
 
 - If COROS MCP is unavailable, expired, or not authorized, do not block Trenere.
-  Explain the issue and fall back to pasted data or files under `raw/imports/`.
+  Explain the issue and fall back to pasted data or files under `{athlete-data-root}/raw/imports/`.
 - If COROS returns more data than needed, summarize and stage only the requested
   range unless the user asks for a broader export.
 - If records appear duplicated against existing wiki workouts, note likely
@@ -160,7 +165,7 @@ Return:
 
 ## Git/Log/Index Update Rules
 
-- Append to `wiki/log.md` using:
+- Append to `{athlete-data-root}/wiki/log.md` using:
 
 ```md
 ## [YYYY-MM-DD] sync | COROS data fetched
@@ -168,7 +173,7 @@ Return:
 Short notes.
 ```
 
-- Update `wiki/meta/last-sync.md` whenever COROS data is fetched.
+- Update `{athlete-data-root}/wiki/meta/last-sync.md` whenever COROS data is fetched.
 - Update `wiki/index.md` only when current sync/import status changes.
 - Commit only after meaningful updates.
 - Default commit:

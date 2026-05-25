@@ -9,12 +9,20 @@ V1 works with only a local folder, markdown files, a coding agent, pasted workou
 data, and git. No external service, install step, COROS access, GitHub remote, or
 Python environment is required.
 
+This repository is intended to be public-safe. Athlete-specific data should live
+in a separate private/local repo, by default:
+
+```text
+../trenere-athlete-data
+```
+
 ## What Trenere Is
 
 - A single-athlete coaching memory stored in markdown.
 - A lightweight set of agent skills for onboarding, workout import, review,
   planning, and wiki linting.
 - A local git repo so meaningful changes can be reviewed and committed.
+- A public core that can be shared without athlete-specific history.
 
 ## What Trenere Is Not
 
@@ -27,8 +35,43 @@ Python environment is required.
 
 1. Open `AGENTS.md`.
 2. Read `wiki/index.md`.
-3. Use `$trenere-ask` if you are unsure what to do next, or run
+3. Create or connect a private athlete-data repo from `templates/athlete-data/`.
+4. Use `$trenere-ask` if you are unsure what to do next, or run
    `/trenere-onboard` to create or update the athlete profile.
+
+## Public/Private Layout
+
+Public core repo:
+
+```text
+trenere/
+  .claude/skills/
+  wiki/index.md
+  wiki/knowledge/
+  wiki/workouts/README.md
+  templates/athlete-data/
+```
+
+Private athlete-data repo:
+
+```text
+trenere-athlete-data/
+  wiki/profile/
+  wiki/log.md
+  wiki/workouts/YYYY-MM.md
+  wiki/blocks/
+  wiki/insights/
+  wiki/meta/
+  raw/imports/
+```
+
+Agents resolve private data in this order:
+
+1. `TRENERE_ATHLETE_DATA`
+2. ignored local pointer file `.trenere-athlete-data`
+3. sibling repo `../trenere-athlete-data`
+
+Do not commit athlete-specific data to the public core.
 
 ## Ask Trenere
 
@@ -73,11 +116,11 @@ Use `/trenere-import`.
 Supported V1 sources:
 
 - manually pasted workout summaries
-- files placed under `raw/imports/`
+- files placed under `{athlete-data-root}/raw/imports/`
 - optional read-only COROS MCP if available
 
 If COROS is unavailable, continue with manual or file input. Workout entries live
-under `wiki/workouts/YYYY-MM.md`.
+under the private athlete-data repo at `{athlete-data-root}/wiki/workouts/YYYY-MM.md`.
 
 ## Fetch From COROS
 
@@ -95,12 +138,12 @@ Use $trenere-review to review recent training.
 If COROS MCP is available in Codex, use it only as a read-only source for
 existing training data.
 
-Current optional COROS MCP setup for this machine:
+Optional COROS MCP local setup:
 
 ```text
-Codex MCP name: coros
-URL: https://mcpeu.coros.com/mcp
-Auth: OAuth
+Suggested Codex MCP name: coros
+URL: choose the COROS regional MCP endpoint for the athlete
+Auth: OAuth, configured locally
 Mode: read-only import/analysis source
 ```
 
@@ -110,7 +153,7 @@ Use `/trenere-review`.
 
 The review should summarize what happened, easy/hard balance, what went well,
 risk signals, what should affect next week, and whether any durable insight
-belongs in `wiki/insights/`.
+belongs in `{athlete-data-root}/wiki/insights/`.
 
 ## Plan Next Week
 
@@ -131,6 +174,10 @@ git commit -m "{skill}: {one-line summary} YYYY-MM-DD"
 
 Do not push unless explicitly requested. Do not commit secrets, auth tokens,
 private config, or accidental private dumps.
+
+Commit public workflow/template changes in `trenere`. Commit athlete-specific
+profile, workout, log, plan, insight, and raw import changes in
+`trenere-athlete-data`.
 
 ## Deferred to V2
 
