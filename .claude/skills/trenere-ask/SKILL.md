@@ -15,7 +15,8 @@ Before reading or writing private coaching data, resolve `{athlete-data-root}` u
 Use this skill when the athlete is unsure what to do, asks a general coaching
 question, wants help interpreting training context, needs a training-load
 adjustment, or does not know whether to run import, review, plan, lint, or COROS
-fetch.
+fetch. Also use it when the athlete asks whether Trenere learned anything new or
+should improve itself from the recent conversation.
 
 This is the front door into Trenere. It should gather enough context to be useful
 without forcing the athlete to choose the perfect workflow first.
@@ -87,6 +88,8 @@ creates useful coaching memory:
    - adjust: modify a planned or implied training load conservatively
    - route: hand off to a specific skill
    - update: write durable coaching memory
+   - learn: audit recent work for durable athlete-specific or general-agent
+     improvements
 3. Check safety boundaries before giving training advice.
 4. Use existing wiki context before asking questions.
 5. If context is missing but the risk is low, state assumptions and give a
@@ -96,6 +99,55 @@ creates useful coaching memory:
 7. If a specific workflow is clearly needed, say which skill should run next and
    why.
 8. If the athlete wants you to proceed, follow the relevant skill file.
+
+## Self-Improvement Flow
+
+Use this flow when the athlete asks whether Trenere learned anything new, asks
+the agent to improve itself, or asks to capture learnings from recent work.
+
+1. Read the self-improvement rules in `AGENTS.md`.
+2. Review recent conversation context, current git diffs, and recent log/sync
+   entries relevant to the request.
+3. Classify each candidate learning into one of three outcomes:
+   - private athlete learning
+   - public general agent learning
+   - no durable update
+4. For private athlete learning, update only `{athlete-data-root}` files:
+   - `{athlete-data-root}/wiki/profile/coaching-directives.md` for standing
+     planning rules
+   - `{athlete-data-root}/wiki/profile/preferences.md` for athlete preferences
+   - `{athlete-data-root}/wiki/profile/injury-history.md` for athlete-reported
+     injury flags
+   - `{athlete-data-root}/wiki/insights/` for durable athlete-specific training
+     conclusions
+   - `{athlete-data-root}/wiki/log.md` for minor or provisional learnings
+5. For public general agent learning, update only public core files:
+   - `AGENTS.md` for canonical behavior
+   - `.claude/skills/trenere-*/SKILL.md` for workflow-specific instructions
+   - `README.md` for user-facing setup or usage
+   - `wiki/knowledge/` for general training knowledge
+6. Do not create public docs from private athlete facts. Generalize only when
+   the lesson is reusable without exposing the athlete.
+7. If public skills are changed, sync the installed Codex skill copies under
+   `~/.codex/skills/trenere-*` when available.
+8. Show changed files for each affected repo.
+9. Commit and push each affected repo separately to `master` when the request
+   explicitly asks for self-improvement persistence. Do not push unrelated
+   changes.
+
+Commit messages:
+
+```bash
+# public core
+git add .
+git commit -m "trenere-ask: capture agent learning YYYY-MM-DD"
+git push origin master
+
+# private athlete-data
+git add .
+git commit -m "trenere-ask: capture athlete learning YYYY-MM-DD"
+git push origin master
+```
 
 ## Memory Persistence Rules
 
@@ -188,6 +240,13 @@ If changing files, include:
   Trenere's scope, keep the answer limited and route back to training context.
 - If the athlete wants a file update but the change is not durable, prefer a
   short `{athlete-data-root}/wiki/log.md` note instead of creating a new page.
+- If the athlete asks whether Trenere learned anything new and there is no
+  durable lesson, say so and do not create filler updates.
+- If a durable lesson affects both the athlete and the agent, split it into two
+  separate commits in the appropriate repos.
+- If either repo has unrelated local changes, do not include them in a
+  self-improvement commit; report the dirty files and continue with the clean
+  repo if possible.
 
 ## Git/Log/Index Update Rules
 
@@ -209,6 +268,8 @@ If changing files, include:
 - Use `review` for advice/interpretation, `plan` for schedule changes, `lint`
   for wiki-health questions, and `sync` for data-source handoffs.
 - Commit only after meaningful wiki updates.
+- For explicit self-improvement requests, commit and push meaningful public and
+  private updates separately to `master`.
 - Default commit:
 
 ```bash

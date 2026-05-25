@@ -14,7 +14,9 @@ Before reading or writing private coaching data, resolve `{athlete-data-root}` u
 
 Use this skill when the wiki may be stale, before important planning, after many
 imports or reviews, or when the athlete asks whether the coaching memory is
-internally consistent.
+internally consistent. It can also surface candidate learnings that should be
+promoted into private athlete memory or public agent instructions, but
+`trenere-ask` owns the explicit self-improvement flow.
 
 ## Inputs Required
 
@@ -55,13 +57,16 @@ zones, injuries, recent plans, insights, or index hygiene.
    should be promoted to `coaching-directives.md`.
 4. Verify `wiki/index.md` links important pages and current status accurately.
 5. Verify insight pages are durable and linked or discoverable.
-6. Make small, obvious fixes when safe.
-7. Do not invent missing athlete facts.
-8. Prioritize findings by coaching impact, not by how easy they are to describe.
-9. Keep the final report concise: no more than 5 findings unless there is a
+6. Identify whether any finding is a self-improvement candidate:
+   athlete-specific learnings belong under `{athlete-data-root}`; reusable agent
+   workflow improvements belong in the public core.
+7. Make small, obvious fixes when safe.
+8. Do not invent missing athlete facts.
+9. Prioritize findings by coaching impact, not by how easy they are to describe.
+10. Keep the final report concise: no more than 5 findings unless there is a
    safety issue.
-10. Append a compact `lint` entry to `{athlete-data-root}/wiki/log.md` with findings and fixes.
-11. Show changed files before committing if asked to commit.
+11. Append a compact `lint` entry to `{athlete-data-root}/wiki/log.md` with findings and fixes.
+12. Show changed files before committing if asked to commit.
 
 ## Output Format
 
@@ -112,6 +117,9 @@ Rules:
 - If an insight is not durable, move the idea into `{athlete-data-root}/wiki/log.md` or mark it for
   review instead of deleting without user approval.
 - If private data appears in raw imports, do not commit it.
+- If lint finds a reusable agent-workflow improvement, report it as a public
+  self-improvement candidate unless the athlete explicitly asked to apply and
+  push self-improvement changes.
 
 ## Git/Log/Index Update Rules
 

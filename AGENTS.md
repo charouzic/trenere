@@ -107,6 +107,34 @@ files before changing anything.
 - Minor thoughts belong in private `{athlete-data-root}/wiki/log.md`, not in a
   new insight page.
 
+## Self-Improvement Rules
+
+When the athlete asks whether Trenere learned anything new, audit the recent
+conversation and changed files for durable lessons. Split the result into two
+separate lanes:
+
+- Athlete-specific learning: private facts, preferences, injury patterns,
+  execution patterns, response to training, current constraints, and coaching
+  directives. Write these only under `{athlete-data-root}`.
+- General agent learning: reusable workflow improvements, skill instructions,
+  repo conventions, safety rules, import behavior, or documentation that would
+  help any Trenere user. Write these only in the public core repo.
+
+Do not blur the lanes. Never put private athlete facts into the public core, and
+do not hide general workflow fixes only in the private athlete-data repo.
+
+For athlete-specific learning, prefer durable destinations in this order:
+`wiki/profile/coaching-directives.md`, `wiki/profile/preferences.md`,
+`wiki/profile/injury-history.md`, `wiki/insights/`, then `wiki/log.md`.
+
+For general agent learning, update the relevant `SKILL.md`, `AGENTS.md`,
+`README.md`, or public `wiki/knowledge/` page.
+
+When updates are made from an explicit self-improvement request, commit and push
+each affected repo separately to its `master` branch after checking status. If a
+repo has unrelated changes, do not mix them into the commit; report the conflict
+instead of committing unrelated work.
+
 ## Skill Usage
 
 Use these skills for recurring work:
