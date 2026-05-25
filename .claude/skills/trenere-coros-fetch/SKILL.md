@@ -114,6 +114,10 @@ for example:
 {athlete-data-root}/raw/imports/coros/tcx/{labelId}.tcx
 ```
 
+Prefer FIT for Trenere because it is the device-native format and usually
+retains the richest data. Use TCX only as a fallback when FIT is unavailable or
+when XML parsing is specifically useful.
+
 If the athlete already knows the `fileUrl`, download it directly. Do not store
 access tokens, cookies, or personal COROS account IDs in the public core repo.
 If a personal id or token is needed for automation, keep it only in ignored
@@ -122,12 +126,8 @@ private config under `{athlete-data-root}`.
 When a FIT file is available, inspect it for `lap`, `record`, `session`, and
 developer-data messages. FIT is usually the richer device-native source.
 
-When a TCX file is available, inspect it for `Lap`, `Trackpoint`, `Extensions`,
-and `Workout` nodes. TCX is easier to parse and useful for laps/trackpoints, but
-may omit proprietary fields and workout-step targets.
-
 Use original-file-derived lap/block data for execution review when available,
-and mark whether the granularity came from FIT, TCX, or MCP.
+and mark whether the granularity came from FIT, fallback TCX, or MCP.
 
 ## Steps
 
@@ -195,7 +195,8 @@ Return:
 - number of records or days returned
 - staged file path, if created
 - workout wiki file updated, if imported
-- FIT/TCX file path and lap/record/trackpoint counts, if downloaded
+- FIT file path and lap/record counts, if downloaded; TCX path only if FIT was
+  unavailable or deliberately used as fallback
 - important missing fields or uncertainty
 - safety/fatigue flags noticed
 - recommended next skill
