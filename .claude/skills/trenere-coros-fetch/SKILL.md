@@ -94,7 +94,7 @@ queries include:
 Do not assume every tool is available. If a requested data type is unavailable,
 say so and offer the closest available read-only alternative.
 
-## Original FIT File Workaround
+## Original Activity File Workaround
 
 COROS MCP activity detail may omit laps, splits, intervals, and workout blocks.
 When block-level execution matters, try to preserve the original activity file.
@@ -106,10 +106,12 @@ https://teameuapi.coros.com/activity/detail/download?labelId={labelId}&sportType
 ```
 
 That endpoint may require an authenticated COROS web token. If the endpoint
-returns a `fileUrl`, download that URL into:
+returns a `fileUrl`, download that URL into an appropriate raw import folder,
+for example:
 
 ```text
 {athlete-data-root}/raw/imports/coros/fit/{labelId}.fit
+{athlete-data-root}/raw/imports/coros/tcx/{labelId}.tcx
 ```
 
 If the athlete already knows the `fileUrl`, download it directly. Do not store
@@ -118,8 +120,14 @@ If a personal id or token is needed for automation, keep it only in ignored
 private config under `{athlete-data-root}`.
 
 When a FIT file is available, inspect it for `lap`, `record`, `session`, and
-developer-data messages. Use FIT-derived lap/block data for execution review
-when available, and mark whether the granularity came from FIT rather than MCP.
+developer-data messages. FIT is usually the richer device-native source.
+
+When a TCX file is available, inspect it for `Lap`, `Trackpoint`, `Extensions`,
+and `Workout` nodes. TCX is easier to parse and useful for laps/trackpoints, but
+may omit proprietary fields and workout-step targets.
+
+Use original-file-derived lap/block data for execution review when available,
+and mark whether the granularity came from FIT, TCX, or MCP.
 
 ## Steps
 
@@ -144,9 +152,9 @@ when available, and mark whether the granularity came from FIT rather than MCP.
     - `/trenere-review` to analyze imported data
     - `/trenere-plan` when the fetched data is enough for planning context
     - `/trenere-import` only if staging succeeded but import could not be done
-13. If the athlete asks about workout-block execution and a FIT file can be
-    downloaded, save it under `{athlete-data-root}/raw/imports/coros/fit/` and
-    extract lap/block summaries into the workout entry or staged notes.
+13. If the athlete asks about workout-block execution and an original activity
+    file can be downloaded, save it under `{athlete-data-root}/raw/imports/coros/`
+    and extract lap/block summaries into the workout entry or staged notes.
 14. Show changed files before committing if asked to commit.
 
 ## Staged File Format
@@ -187,7 +195,7 @@ Return:
 - number of records or days returned
 - staged file path, if created
 - workout wiki file updated, if imported
-- FIT file path and lap/record counts, if downloaded
+- FIT/TCX file path and lap/record/trackpoint counts, if downloaded
 - important missing fields or uncertainty
 - safety/fatigue flags noticed
 - recommended next skill
