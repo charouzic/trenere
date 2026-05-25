@@ -203,6 +203,72 @@ sources and compare planned blocks to actual execution conservatively. If FIT
 laps do not match planned blocks exactly, say so instead of forcing a false
 interval-by-interval comparison.
 
+## Planned-vs-Actual Fast Path
+
+Use this path when the athlete asks to compare a completed workout against its
+scheduled/programmed blocks, especially HR-, pace-, or power-limited blocks.
+
+Required identifiers:
+
+- workout date
+- `labelId`
+- `sportType`
+
+If the athlete gives only a date, first use COROS MCP workout records or the
+existing workout wiki to resolve `labelId` and `sportType`.
+
+1. Fetch the planned workout summary with COROS MCP schedule for the date.
+2. If `COROS_ACCESS_TOKEN` is present, fetch richer schedule data from:
+
+```text
+https://teameuapi.coros.com/training/schedule/query?startDate=YYYYMMDD&endDate=YYYYMMDD&supportRestExercise=1
+```
+
+with header:
+
+```text
+accesstoken: $COROS_ACCESS_TOKEN
+```
+
+3. Match the schedule `entities[].labelId` to the completed workout `labelId`.
+4. From the matched `programs[].exercises`, preserve only the fields needed for
+   analysis:
+   - block order: `sortNo`
+   - block kind: `exerciseType`, `name`, `overview`
+   - duration/distance target: `targetType`, `targetValue`
+   - intensity target: `intensityType`, `hrType`, `intensityValue`,
+     `intensityValueExtend`, `intensityPercent`, `intensityPercentExtend`,
+     `isIntensityPercent`, `intensityCustom`
+   - grouping: `isGroup`, `groupId`, `sets`
+5. Download or reuse the original FIT file for the activity.
+6. Parse FIT `record` messages for timestamp, heart rate, power, pace/speed,
+   distance, and cadence as available. Use temporary/local parser tooling if
+   present; do not add parser dependencies to the public repo.
+7. If FIT contains `workout_step` messages, use them for alignment. If it does
+   not, align planned blocks by elapsed time from the first FIT record.
+8. For each planned block, report:
+   - planned target and duration/distance
+   - actual elapsed window
+   - actual distance
+   - average and max value for the target metric
+   - time and percent below, inside, and above target range
+9. Report extra time after the planned workout as `not planned`.
+10. Preserve the comparison under:
+
+```text
+{athlete-data-root}/raw/imports/coros/YYYY-MM-DD-workout-YYYY-MM-DD-planned-target-comparison.md
+```
+
+11. Update the monthly workout entry with a compact comparison table and coaching
+    read.
+12. Update `{athlete-data-root}/wiki/meta/last-sync.md` and append a compact
+    `{athlete-data-root}/wiki/log.md` entry.
+
+If `COROS_ACCESS_TOKEN` is absent or invalid, do not attempt browser/session
+workarounds by default. Use MCP summaries and the FIT file, mark planned targets
+as `not provided`, and tell the athlete that a fresh token is needed for block
+targets.
+
 ## Steps
 
 1. Follow the session start routine in `AGENTS.md`.
@@ -222,12 +288,10 @@ interval-by-interval comparison.
 10. Include source, fetch date, date range, query parameters, returned records,
     label IDs, FIT download status, and FIT-derived lap summaries when available
     in the staged file.
-11. If planned target zones are requested, fetch and stage any available
-    schedule summaries and target fields. Prefer MCP first. If richer planned
-    target data is needed and `COROS_ACCESS_TOKEN` is present, optionally call
-    the COROS web schedule/detail endpoints with that token in the `accesstoken`
-    header. Mark target zones `not provided` when MCP/web data does not expose
-    them.
+11. If planned target zones or planned-vs-actual comparison are requested, follow
+    the Planned-vs-Actual Fast Path. Prefer MCP first for identity/summary, then
+    use `COROS_ACCESS_TOKEN` for richer schedule blocks when present. Mark target
+    zones `not provided` when MCP/web data does not expose them.
 12. If the returned data is workout records and includes enough fields, import or
    update entries in `{athlete-data-root}/wiki/workouts/YYYY-MM.md` using the
    public workout format.
@@ -276,6 +340,12 @@ download status, parser/message counts, and lap summaries when available.
 Schedule, plan, or program target fields returned by COROS. Include planned
 steps, target type/value, intensity type/ranges, units, and missing target-zone
 notes. Use `not provided` when only schedule summaries are available.
+
+## Planned-vs-Actual Comparison
+
+For each planned block, include the planned target, actual elapsed window,
+actual distance, average/max target metric, and time/percent below, inside, and
+above target. Include extra time after the planned workout as `not planned`.
 
 ## Import Notes
 
