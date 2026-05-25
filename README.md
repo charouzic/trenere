@@ -3,8 +3,8 @@
 Trenere is a local markdown-based endurance coaching wiki.
 
 It is not an app, backend, metrics engine, or AI coaching platform. It is a small
-set of markdown files and Codex skills that help maintain training memory over
-time.
+set of markdown files and agent workflows that help maintain training memory
+over time.
 
 Core loop:
 
@@ -33,7 +33,25 @@ printf '../trenere-athlete-data\n' > .trenere-athlete-data
 `.trenere-athlete-data` is ignored by git. Keep `trenere-athlete-data` private
 or local-only.
 
-## Install Codex Skills
+## Choose Your Agent
+
+Trenere is agent-agnostic. The workflow files live in `.claude/skills/` because
+that is a simple, readable convention, but any coding agent can follow them.
+
+Claude Code can usually use the `.claude/skills/trenere-*` folders directly:
+
+```bash
+cd ~/trenere
+claude
+```
+
+Then ask:
+
+```text
+Use trenere-ask. I am setting up Trenere for the first time.
+```
+
+Codex needs the skills copied into `~/.codex/skills`:
 
 ```bash
 cd ~/trenere
@@ -45,14 +63,14 @@ for d in .claude/skills/trenere-*; do
 done
 ```
 
-Restart Codex from the public core repo:
+Then restart Codex from the public core repo:
 
 ```bash
 cd ~/trenere
 codex
 ```
 
-Invoke skills with `$`, not `/`:
+In Codex, invoke skills with `$`, not `/`:
 
 ```text
 Use $trenere-ask
@@ -63,26 +81,26 @@ Use $trenere-ask
 Start here:
 
 ```text
-Use $trenere-ask. I am setting up Trenere for the first time.
+Use trenere-ask. I am setting up Trenere for the first time.
 ```
 
 Main skills:
 
-- `$trenere-ask` — general entrypoint when unsure what to do
-- `$trenere-onboard` — create or update athlete profile
-- `$trenere-import` — import pasted or staged workouts
-- `$trenere-review` — review recent training
-- `$trenere-plan` — plan next week
-- `$trenere-lint` — health-check the wiki
-- `$trenere-coros-fetch` — optional read-only COROS fetch and staging
+- `trenere-ask` — general entrypoint when unsure what to do
+- `trenere-onboard` — create or update athlete profile
+- `trenere-import` — import pasted or staged workouts
+- `trenere-review` — review recent training
+- `trenere-plan` — plan next week
+- `trenere-lint` — health-check the wiki
+- `trenere-coros-fetch` — optional read-only COROS fetch and staging
 
 Typical flow:
 
 ```text
-Use $trenere-onboard for minimal onboarding.
-Use $trenere-import. Here are my workouts: ...
-Use $trenere-review to review the last two weeks.
-Use $trenere-plan to plan next week.
+Use trenere-onboard for minimal onboarding.
+Use trenere-import. Here are my workouts: ...
+Use trenere-review to review the last two weeks.
+Use trenere-plan to plan next week.
 ```
 
 ## Data Split
