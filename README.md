@@ -2,59 +2,35 @@
 
 Trenere is a local markdown-based endurance coaching wiki.
 
-It is not an app, backend, metrics engine, or AI coaching platform. It is a small
-set of markdown files and agent workflows that help maintain training memory
-over time.
-
-Core loop:
-
-```text
-import workouts -> review training -> plan next week -> commit changes
-```
+It is not an app, backend, metrics engine, or AI coaching platform. It is a
+small repo of markdown files and agent workflows that help preserve coaching
+memory over time.
 
 ## Setup
 
-Use two repos: public core plus private athlete data.
+Use a public core repo plus private athlete data:
 
 ```bash
 git clone https://github.com/charouzic/trenere.git
 cd trenere
-
 cp -R templates/athlete-data ../trenere-athlete-data
 cd ../trenere-athlete-data
-git init
-git add .
-git commit -m "init: trenere athlete data scaffold"
-
+git init && git add . && git commit -m "init: trenere athlete data scaffold"
 cd ../trenere
 printf '../trenere-athlete-data\n' > .trenere-athlete-data
 ```
 
-`.trenere-athlete-data` is ignored by git. Keep `trenere-athlete-data` private
-or local-only.
+Keep `trenere-athlete-data` private or local-only.
 
-## Choose Your Agent
+## Agent Use
 
-Trenere is agent-agnostic. The workflow files live in `.claude/skills/` because
-that is a simple, readable convention, but any coding agent can follow them.
+Trenere is agent-agnostic. Skills live in `.claude/skills/` as readable workflow
+files.
 
-Claude Code can usually use the `.claude/skills/trenere-*` folders directly:
-
-```bash
-cd ~/trenere
-claude
-```
-
-Then ask:
-
-```text
-Use trenere-ask. I am setting up Trenere for the first time.
-```
-
-Codex needs the skills copied into `~/.codex/skills`:
+Claude Code can use them from the repo. For Codex, copy them into
+`~/.codex/skills`:
 
 ```bash
-cd ~/trenere
 mkdir -p ~/.codex/skills
 for d in .claude/skills/trenere-*; do
   name="$(basename "$d")"
@@ -63,90 +39,42 @@ for d in .claude/skills/trenere-*; do
 done
 ```
 
-Then restart Codex from the public core repo:
+Codex uses `$trenere-ask`, not `/trenere-ask`.
 
-```bash
-cd ~/trenere
-codex
-```
-
-In Codex, invoke skills with `$`, not `/`:
+## Flow
 
 ```text
-Use $trenere-ask
+trenere-onboard -> trenere-import -> trenere-review -> trenere-plan
 ```
 
-## Use
+Use `trenere-ask` when unsure. Use `trenere-lint` for wiki health. Use
+`trenere-coros-fetch` only if COROS MCP is configured; V1 works without it.
 
-Start here:
+## Public vs Private
 
-```text
-Use trenere-ask. I am setting up Trenere for the first time.
-```
+Public core:
 
-Main skills:
+- `.claude/skills/`
+- `AGENTS.md`
+- `wiki/index.md`
+- `wiki/coach-knowledge.md`
+- `wiki/workouts/README.md`
+- `templates/athlete-data/`
 
-- `trenere-ask` — general entrypoint when unsure what to do
-- `trenere-onboard` — create or update athlete profile
-- `trenere-import` — import pasted or staged workouts
-- `trenere-review` — review recent training
-- `trenere-plan` — plan next week
-- `trenere-lint` — health-check the wiki
-- `trenere-coros-fetch` — optional read-only COROS fetch and staging
+Private athlete data:
 
-Typical flow:
+- `wiki/profile/`
+- `wiki/log.md`
+- `wiki/workouts/`
+- `wiki/insights/`
+- `raw/imports/`
 
-```text
-Use trenere-onboard for minimal onboarding.
-Use trenere-import. Here are my workouts: ...
-Use trenere-review to review the last two weeks.
-Use trenere-plan to plan next week.
-```
+Resolve private data from `TRENERE_ATHLETE_DATA`, `.trenere-athlete-data`, then
+`../trenere-athlete-data`.
 
-For a fictional end-to-end example, see
-[`examples/minimal-flow/README.md`](examples/minimal-flow/README.md).
+## Boundaries
 
-## Data Split
-
-Public core repo:
-
-```text
-trenere/
-  .claude/skills/
-  AGENTS.md
-  wiki/principles/
-  wiki/workouts/
-  wiki/programming/
-  wiki/races/
-  wiki/data/
-  wiki/evidence/
-  wiki/knowledge/
-  examples/
-  templates/athlete-data/
-```
-
-Private athlete-data repo:
-
-```text
-trenere-athlete-data/
-  wiki/profile/
-  wiki/log.md
-  wiki/workouts/
-  wiki/insights/
-  raw/imports/
-```
-
-Trenere resolves private data from:
-
-1. `TRENERE_ATHLETE_DATA`
-2. `.trenere-athlete-data`
-3. `../trenere-athlete-data`
-
-## Notes
-
-- Read `AGENTS.md` for the canonical agent rules.
-- Keep athlete-specific data out of the public core repo.
-- COROS is optional and read-only in V1.
-- Trenere is not a doctor. For chest pain, unusual breathing restriction, fever,
-  sharp worsening pain, neurological symptoms, or symptoms that persist/worsen,
-  stop training and seek medical evaluation.
+Keep athlete-specific data out of the public core. Do not commit secrets or auth
+tokens. Trenere is not a doctor; for chest pain, unusual breathing restriction,
+fever, sharp worsening pain, neurological symptoms, or persistent/worsening
+symptoms, stop training and seek medical evaluation.
