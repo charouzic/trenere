@@ -30,6 +30,10 @@ COROS calendar, or require COROS for the rest of Trenere to work.
 If no date range is provided, default to the last 14 days for workouts and the
 last 7 days for health/recovery trends.
 
+Default behavior is persistent: when COROS returns concrete records, preserve
+them in the private athlete-data repo unless the athlete explicitly asks for a
+no-write summary.
+
 ## Files To Read
 
 - `AGENTS.md`
@@ -44,13 +48,15 @@ last 7 days for health/recovery trends.
 ## Files To Update
 
 - `{athlete-data-root}/raw/imports/coros/YYYY-MM-DD-*.md` when staging COROS source material
+- `{athlete-data-root}/wiki/workouts/YYYY-MM.md` when workout records include
+  enough fields for robust entries
 - `{athlete-data-root}/wiki/meta/last-sync.md` when data is fetched or staged
 - `{athlete-data-root}/wiki/log.md`
 - `wiki/index.md` only if current import/sync status should change
 
-Do not update `{athlete-data-root}/wiki/workouts/YYYY-MM.md` directly unless the user explicitly asks
-to fetch and import in one pass. Prefer handing staged COROS source material to
-`/trenere-import`.
+For workout records, staging alone is not enough when the returned data has
+date, sport/type, duration, and distance. Import those records into the monthly
+workout wiki in the same turn, or explicitly invoke/follow `/trenere-import`.
 
 ## COROS MCP Source
 
@@ -95,18 +101,23 @@ say so and offer the closest available read-only alternative.
 3. Use the configured `coros` MCP tools in read-only mode.
 4. Preserve raw values and uncertainty. Do not invent missing fields.
 5. Summarize the fetched data in plain language.
-6. If staging source material, create a dated markdown file under
+6. Create a dated markdown file under
    `{athlete-data-root}/raw/imports/coros/`.
 7. Include source, fetch date, date range, query parameters, and returned records
    in the staged file.
-8. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch date, range, and staged
-   file path.
-9. Append a `sync` entry to `{athlete-data-root}/wiki/log.md`.
-10. Recommend the next skill:
-    - `/trenere-import` to convert staged workout data into `{athlete-data-root}/wiki/workouts/`
-    - `/trenere-review` to analyze already-imported data
+8. If the returned data is workout records and includes enough fields, import or
+   update entries in `{athlete-data-root}/wiki/workouts/YYYY-MM.md` using the
+   public workout format.
+9. Use `not provided` or `unknown` for missing fields. Do not invent elevation,
+   RPE, subjective notes, HRV, resting HR, or sleep.
+10. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch
+    date, range, staged file path, and import status.
+11. Append a `sync` or `import` entry to `{athlete-data-root}/wiki/log.md`.
+12. Recommend the next skill:
+    - `/trenere-review` to analyze imported data
     - `/trenere-plan` when the fetched data is enough for planning context
-11. Show changed files before committing if asked to commit.
+    - `/trenere-import` only if staging succeeded but import could not be done
+13. Show changed files before committing if asked to commit.
 
 ## Staged File Format
 
@@ -145,6 +156,7 @@ Return:
 - date range
 - number of records or days returned
 - staged file path, if created
+- workout wiki file updated, if imported
 - important missing fields or uncertainty
 - safety/fatigue flags noticed
 - recommended next skill
@@ -153,10 +165,11 @@ Return:
 
 - If COROS MCP is unavailable, expired, or not authorized, do not block Trenere.
   Explain the issue and fall back to pasted data or files under `{athlete-data-root}/raw/imports/`.
-- If COROS returns more data than needed, summarize and stage only the requested
+- If COROS returns more data than needed, stage and import only the requested
   range unless the user asks for a broader export.
 - If records appear duplicated against existing wiki workouts, note likely
-  duplicates in the staged file; do not delete anything.
+  duplicates in the staged file and update/merge missing fields conservatively;
+  do not create duplicate workout entries and do not delete anything.
 - If COROS data includes symptoms covered by the safety boundary in `AGENTS.md`,
   advise stopping training and seeking medical evaluation.
 - If the user asks to write to COROS, decline for V1 and explain that this skill

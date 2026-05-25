@@ -81,6 +81,11 @@ For each workout, capture whatever is available:
 13. Append an `import` or `sync` entry to `{athlete-data-root}/wiki/log.md`.
 14. Show changed files before committing if asked to commit.
 
+When the source is COROS workout records that were just fetched by
+`trenere-ask` or `trenere-coros-fetch`, do not treat "summary only" as complete
+unless the athlete explicitly asked for no file writes. Import usable workouts
+into the monthly workout wiki so coaching memory survives the chat.
+
 ## Output Format
 
 Return:

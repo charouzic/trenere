@@ -35,6 +35,11 @@ Common useful inputs:
 - recent workout context, if not already imported
 - whether the athlete wants advice only or wants the wiki updated
 
+If the request causes the agent to retrieve or view concrete workout records
+from an external source such as COROS, do not leave those records only in the
+chat transcript. Stage and/or import them unless the athlete explicitly asks for
+a no-write summary.
+
 ## Files To Read
 
 Always read:
@@ -66,6 +71,10 @@ creates useful coaching memory:
 - `{athlete-data-root}/wiki/log.md` for meaningful advice, decisions, or handoffs
 - `{athlete-data-root}/wiki/profile/coaching-directives.md` for durable planning rules
 - `{athlete-data-root}/wiki/profile/injury-history.md` for athlete-reported injury flags
+- `{athlete-data-root}/raw/imports/` when external source records were fetched
+  and should be preserved
+- `{athlete-data-root}/wiki/workouts/YYYY-MM.md` when fetched workout records
+  include enough information to create robust workout entries
 - `wiki/index.md` if current status changes
 - other wiki pages only when a specific routed workflow requires them
 
@@ -87,6 +96,23 @@ creates useful coaching memory:
 7. If a specific workflow is clearly needed, say which skill should run next and
    why.
 8. If the athlete wants you to proceed, follow the relevant skill file.
+
+## Memory Persistence Rules
+
+- Ordinary Q&A can remain answer-only.
+- If the agent fetches, sees, or summarizes actual workout records from COROS or
+  another source, preserve them in the private athlete-data repo in the same
+  turn unless the athlete explicitly requested no file writes.
+- For fetched workout records, prefer this order:
+  1. Stage source material under `{athlete-data-root}/raw/imports/`.
+  2. Import usable workout entries into
+     `{athlete-data-root}/wiki/workouts/YYYY-MM.md`.
+  3. Update `{athlete-data-root}/wiki/meta/last-sync.md`.
+  4. Append a compact entry to `{athlete-data-root}/wiki/log.md`.
+- If only a partial summary is available, stage the summary and mark missing
+  fields as `not provided`; do not invent precision.
+- If enough fields exist for a workout entry, do not stop at "I can see them";
+  write them into the workout wiki or run `trenere-import` in the same turn.
 
 ## Routing Rules
 
@@ -166,6 +192,8 @@ If changing files, include:
 ## Git/Log/Index Update Rules
 
 - Do not update files for ordinary Q&A.
+- Do update files when a supposedly "ask" request retrieves concrete workout
+  records or other coaching memory that would otherwise be lost after the chat.
 - Append to `{athlete-data-root}/wiki/log.md` only for meaningful coaching decisions, load
   adjustments, or workflow handoffs that should be remembered.
 - If appending to `{athlete-data-root}/wiki/log.md`, use:
