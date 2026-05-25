@@ -27,7 +27,27 @@ Python environment is required.
 
 1. Open `AGENTS.md`.
 2. Read `wiki/index.md`.
-3. Run `/trenere-onboard` to create or update the athlete profile.
+3. Use `$trenere-ask` if you are unsure what to do next, or run
+   `/trenere-onboard` to create or update the athlete profile.
+
+## Ask Trenere
+
+Use `/trenere-ask` as the general entrypoint when you are unsure, need help,
+want a training-load adjustment, or do not know which workflow to run.
+
+In Codex, invoke it as:
+
+```text
+Use $trenere-ask
+```
+
+Examples:
+
+```text
+Use $trenere-ask. I slept badly and have intervals planned. What should I do?
+Use $trenere-ask. I am not sure whether to import, review, or plan next.
+Use $trenere-ask. Does my current week look too hard?
+```
 
 ## Run Onboarding
 

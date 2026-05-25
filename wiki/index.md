@@ -5,6 +5,8 @@ page becomes important to future coaching decisions.
 
 ## Start Here
 
+- [Trenere Ask Skill](../.claude/skills/trenere-ask/SKILL.md) — general
+  entrypoint for questions, uncertainty, advice, load adjustments, and routing.
 - [Athlete Profile](profile/athlete.md) — current goal, training context, weekly
   volume, zones, constraints, and recent training summary.
 - [Coaching Directives](profile/coaching-directives.md) — standing rules the

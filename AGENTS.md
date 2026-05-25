@@ -68,6 +68,8 @@ files before changing anything.
 
 Use these skills for recurring work:
 
+- `/trenere-ask` for the general entrypoint when the athlete is unsure what to
+  ask, needs help, wants advice, or needs routing to the right workflow.
 - `/trenere-onboard` for athlete profile setup or updates.
 - `/trenere-coros-fetch` for read-only COROS MCP data retrieval and staging.
 - `/trenere-import` for workout import from pasted summaries, staged files, or

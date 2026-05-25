@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trenere Ask"
+  short_description: "General Trenere coaching entrypoint"
+  default_prompt: "Use $trenere-ask as the general Trenere entrypoint for questions, uncertainty, training adjustments, and routing to the right workflow."
