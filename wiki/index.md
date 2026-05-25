@@ -36,6 +36,11 @@ coaching memory lives in the private athlete-data repo, defaulting to
   runner level and context.
 - [Programming](programming/weekly_structure_examples.md) — weekly structures,
   progression, deloads, and return-from-niggle rules.
+- [Race Guidance](races/5k.md) — race-distance defaults for 5K, 10K, half
+  marathon, marathon, trail, and ultra goals.
+- [Training Data Interpretation](data/training_data_interpretation.md) —
+  conservative rules for HR, pace, power, GPS, elevation, FIT, and
+  planned-vs-actual analysis.
 - [Evidence Summary](evidence/evidence_summary.md) — confidence labels and
   claims that should stay conservative.
 
@@ -84,6 +89,25 @@ coaching memory lives in the private athlete-data repo, defaulting to
 - [Deload Rules](programming/deload_rules.md) — when and how to reduce load.
 - [Return From Niggle Rules](programming/return_from_niggle_rules.md) — staged
   return to normal training.
+
+## Race Pages
+
+- [5K](races/5k.md) — speed endurance and controlled intensity for hobby
+  runners.
+- [10K](races/10k.md) — threshold, aerobic support, and pacing discipline.
+- [Half Marathon](races/half_marathon.md) — endurance, threshold, and fueling
+  practice.
+- [Marathon](races/marathon.md) — durable volume, long runs, fueling, and risk
+  control.
+- [Trail Race](races/trail_race.md) — terrain, elevation, descending, and
+  logistics.
+- [Ultra](races/ultra.md) — time-on-feet, fueling, hiking, and fatigue
+  resistance.
+
+## Data Pages
+
+- [Training Data Interpretation](data/training_data_interpretation.md) — how to
+  use device data without overclaiming.
 
 ## Private Meta
 

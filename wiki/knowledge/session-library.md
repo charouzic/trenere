@@ -1,5 +1,19 @@
 # Session Library
 
+This is a legacy overview page. Prefer the specific workout pages for active
+planning:
+
+- [Easy Runs](../workouts/easy_runs.md)
+- [Long Runs](../workouts/long_runs.md)
+- [Threshold Runs](../workouts/threshold_runs.md)
+- [VO2max Intervals](../workouts/vo2max_intervals.md)
+- [Hill Repeats](../workouts/hill_repeats.md)
+- [Strides](../workouts/strides.md)
+- [Progression Runs](../workouts/progression_runs.md)
+- [Fartlek](../workouts/fartlek.md)
+- [Race-Specific Workouts](../workouts/race_specific_workouts.md)
+- [Trail / Ultra Specific](../workouts/trail_ultra_specific.md)
+
 Reusable session patterns for planning. Adjust only after considering current
 fitness, constraints, and injury flags.
 

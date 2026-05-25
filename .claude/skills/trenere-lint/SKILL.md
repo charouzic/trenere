@@ -39,6 +39,10 @@ zones, injuries, recent plans, insights, or index hygiene.
 - `{athlete-data-root}/wiki/blocks/README.md`
 - block pages
 - `{athlete-data-root}/wiki/meta/last-sync.md`
+- public knowledge navigation in `wiki/index.md`
+- structured public knowledge pages under `wiki/principles/`, `wiki/workouts/`,
+  `wiki/runner_profiles/`, `wiki/programming/`, `wiki/races/`, `wiki/data/`,
+  and `wiki/evidence/` when linting public core knowledge
 
 ## Files To Update
 

@@ -36,8 +36,18 @@ If some inputs are missing, use existing wiki context and mark assumptions.
 - `{athlete-data-root}/wiki/profile/coaching-directives.md`
 - recent `{athlete-data-root}/wiki/workouts/YYYY-MM.md` files
 - recent `{athlete-data-root}/wiki/insights/*.md` if relevant
-- `wiki/knowledge/session-library.md`
-- `wiki/knowledge/training-principles.md`
+- `wiki/principles/training_principles.md`
+- `wiki/principles/intensity_distribution.md`
+- `wiki/principles/volume_and_mileage.md`
+- `wiki/principles/recovery_and_adaptation.md`
+- `wiki/principles/injury_prevention.md` when niggles or injury history matter
+- `wiki/programming/weekly_structure_examples.md`
+- `wiki/programming/progression_rules.md`
+- `wiki/programming/deload_rules.md`
+- `wiki/programming/return_from_niggle_rules.md` when relevant
+- one relevant `wiki/runner_profiles/*.md` page
+- relevant `wiki/workouts/*.md` pages for planned session types
+- relevant `wiki/races/*.md` pages when a goal race is known
 - `{athlete-data-root}/wiki/log.md`
 
 ## Files To Update
@@ -51,17 +61,22 @@ If some inputs are missing, use existing wiki context and mark assumptions.
 
 1. Follow the session start routine in `AGENTS.md`.
 2. Read recent training and any recent review.
-3. Confirm or infer the planning week. State assumptions clearly.
-4. Respect available days and fixed constraints.
-5. Set a weekly goal.
-6. Build a day-by-day schedule.
-7. For each session, include purpose and intensity guidance.
-8. Include fallback rules if tired, stressed, sore, sick, or short on time.
-9. Specify what feedback to report after key sessions.
-10. Avoid aggressive progressions unless recent training supports them.
-11. Append a `plan` entry to `{athlete-data-root}/wiki/log.md`.
-12. Update `wiki/index.md` current planning horizon.
-13. Show changed files before committing if asked to commit.
+3. Select the closest runner profile and read the matching public profile page.
+4. Read the public programming pages for weekly structure, progression, and
+   deload rules.
+5. If a race goal is known, read the relevant race-distance page.
+6. Confirm or infer the planning week. State assumptions clearly.
+7. Respect available days and fixed constraints.
+8. Set a weekly goal.
+9. Build a day-by-day schedule.
+10. For each session, include purpose and intensity guidance from the relevant
+    workout page.
+11. Include fallback rules if tired, stressed, sore, sick, or short on time.
+12. Specify what feedback to report after key sessions.
+13. Avoid aggressive progressions unless recent training supports them.
+14. Append a `plan` entry to `{athlete-data-root}/wiki/log.md`.
+15. Update `wiki/index.md` current planning horizon.
+16. Show changed files before committing if asked to commit.
 
 ## Planning Rules
 
@@ -70,6 +85,14 @@ If some inputs are missing, use existing wiki context and mark assumptions.
 - Progress conservatively.
 - Prioritize consistency over hero sessions.
 - Modify plan if sleep, stress, soreness, or injury flags are poor.
+- Use beginner/intermediate/serious-hobby/trail-ultra defaults as defaults, not
+  labels of athlete worth.
+- Do not schedule two hard sessions unless recent recovery, injury status, and
+  consistency support it.
+- Count demanding long runs, hilly trail runs, downhill exposure, and fast-finish
+  long runs as hard sessions.
+- When the athlete has no recent speed exposure, prescribe strides before
+  intervals.
 
 ## Output Format
 

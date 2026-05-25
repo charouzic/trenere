@@ -45,6 +45,8 @@ no-write summary.
 - `{athlete-data-root}/wiki/meta/last-sync.md`
 - `{athlete-data-root}/wiki/log.md`
 - `{athlete-data-root}/raw/imports/README.md`
+- `wiki/data/training_data_interpretation.md` when interpreting HR, pace, power,
+  GPS, elevation, FIT, laps, or planned-vs-actual execution
 - `.claude/skills/trenere-import/SKILL.md` if the next step is wiki import
 
 ## Files To Update
@@ -282,26 +284,28 @@ targets.
 7. If a FIT file is downloaded, inspect it for message counts and lap summaries.
    Do not require a parser dependency in the public repo; use available local
    tooling or summarize that FIT was preserved for later parsing.
-8. Summarize the fetched data in plain language.
-9. Create a dated markdown file under
+8. Interpret device metrics conservatively using
+   `wiki/data/training_data_interpretation.md`; do not overfit one workout.
+9. Summarize the fetched data in plain language.
+10. Create a dated markdown file under
    `{athlete-data-root}/raw/imports/coros/`.
-10. Include source, fetch date, date range, query parameters, returned records,
+11. Include source, fetch date, date range, query parameters, returned records,
     label IDs, FIT download status, and FIT-derived lap summaries when available
     in the staged file.
-11. If planned target zones or planned-vs-actual comparison are requested, follow
+12. If planned target zones or planned-vs-actual comparison are requested, follow
     the Planned-vs-Actual Fast Path. Prefer MCP first for identity/summary, then
     use `COROS_ACCESS_TOKEN` for richer schedule blocks when present. Mark target
     zones `not provided` when MCP/web data does not expose them.
-12. If the returned data is workout records and includes enough fields, import or
+13. If the returned data is workout records and includes enough fields, import or
    update entries in `{athlete-data-root}/wiki/workouts/YYYY-MM.md` using the
    public workout format.
-13. Use `not provided` or `unknown` for missing fields. Do not invent elevation,
+14. Use `not provided` or `unknown` for missing fields. Do not invent elevation,
    RPE, subjective notes, HRV, resting HR, or sleep.
-14. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch
+15. Update `{athlete-data-root}/wiki/meta/last-sync.md` with the COROS fetch
     date, range, staged file path, FIT file paths when available, and import
     status.
-15. Append a `sync` or `import` entry to `{athlete-data-root}/wiki/log.md`.
-16. Recommend the next skill:
+16. Append a `sync` or `import` entry to `{athlete-data-root}/wiki/log.md`.
+17. Recommend the next skill:
     - `/trenere-review` to analyze imported data
     - `/trenere-plan` when the fetched data is enough for planning context
     - `/trenere-import` only if staging succeeded but import could not be done

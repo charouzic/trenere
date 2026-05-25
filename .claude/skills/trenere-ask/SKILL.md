@@ -59,8 +59,40 @@ Read as needed:
 - `{athlete-data-root}/wiki/meta/last-sync.md`
 - relevant skill files under `.claude/skills/trenere-*/SKILL.md`
 - `{athlete-data-root}/wiki/insights/` pages
-- `wiki/knowledge/training-principles.md`
-- `wiki/knowledge/session-library.md`
+- public knowledge pages from the routing table below
+
+## Public Knowledge Routing
+
+Read only the pages relevant to the question:
+
+- General training philosophy or conservative defaults:
+  `wiki/principles/training_principles.md`.
+- Easy/hard balance, gray-zone concerns, or workout load:
+  `wiki/principles/intensity_distribution.md`.
+- Volume changes, mileage increases, or long-run progression:
+  `wiki/principles/volume_and_mileage.md` and
+  `wiki/programming/progression_rules.md`.
+- Fatigue, poor sleep, HRV, resting HR, stress, or whether to reduce training:
+  `wiki/principles/recovery_and_adaptation.md` and
+  `wiki/programming/deload_rules.md`.
+- Pain, niggles, injury return, or gait changes:
+  `wiki/principles/injury_prevention.md` and
+  `wiki/programming/return_from_niggle_rules.md`.
+- Strength training:
+  `wiki/principles/strength_training.md`.
+- Next-week planning:
+  `wiki/programming/weekly_structure_examples.md`,
+  `wiki/programming/progression_rules.md`, and the relevant runner profile.
+- Goal-race planning:
+  relevant pages under `wiki/races/` plus
+  `wiki/principles/periodization.md`.
+- Specific workout advice:
+  relevant pages under `wiki/workouts/`.
+- COROS, FIT, HR, pace, power, GPS, elevation, or planned-vs-actual analysis:
+  `wiki/data/training_data_interpretation.md`.
+- Evidence strength or uncertain claims:
+  `wiki/evidence/evidence_summary.md` and
+  `wiki/evidence/weak_or_uncertain_claims.md`.
 
 ## Files To Update
 
@@ -125,7 +157,7 @@ the agent to improve itself, or asks to capture learnings from recent work.
    - `AGENTS.md` for canonical behavior
    - `.claude/skills/trenere-*/SKILL.md` for workflow-specific instructions
    - `README.md` for user-facing setup or usage
-   - `wiki/knowledge/` for general training knowledge
+   - structured public wiki knowledge pages for general training knowledge
 6. Do not create public docs from private athlete facts. Generalize only when
    the lesson is reusable without exposing the athlete.
 7. If public skills are changed, sync the installed Codex skill copies under

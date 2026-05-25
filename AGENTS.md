@@ -54,7 +54,15 @@ Public core paths stay in this repo:
 
 - `.claude/skills/`
 - `wiki/index.md`
-- `wiki/knowledge/`
+- `wiki/principles/`
+- `wiki/workouts/`
+- `wiki/runner_profiles/`
+- `wiki/programming/`
+- `wiki/races/`
+- `wiki/data/`
+- `wiki/evidence/`
+- `wiki/knowledge/` for short legacy overview pages that point into the
+  structured knowledge tree
 - `wiki/workouts/README.md`
 - `templates/athlete-data/`
 
@@ -128,7 +136,9 @@ For athlete-specific learning, prefer durable destinations in this order:
 `wiki/profile/injury-history.md`, `wiki/insights/`, then `wiki/log.md`.
 
 For general agent learning, update the relevant `SKILL.md`, `AGENTS.md`,
-`README.md`, or public `wiki/knowledge/` page.
+`README.md`, or public wiki knowledge page. Prefer the structured public
+knowledge tree: `wiki/principles/`, `wiki/workouts/`, `wiki/runner_profiles/`,
+`wiki/programming/`, `wiki/races/`, `wiki/data/`, and `wiki/evidence/`.
 
 When updates are made from an explicit self-improvement request, commit and push
 each affected repo separately to its `master` branch after checking status. If a

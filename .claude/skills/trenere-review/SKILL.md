@@ -36,6 +36,13 @@ usually the last 7-14 days.
 - recent `{athlete-data-root}/wiki/workouts/YYYY-MM.md` files
 - `{athlete-data-root}/wiki/insights/README.md`
 - recent insight pages if relevant
+- `wiki/principles/intensity_distribution.md`
+- `wiki/principles/recovery_and_adaptation.md`
+- `wiki/principles/injury_prevention.md`
+- `wiki/principles/volume_and_mileage.md`
+- `wiki/data/training_data_interpretation.md` when metrics, COROS, FIT, HR,
+  pace, power, GPS, elevation, or planned-vs-actual execution are involved
+- `wiki/evidence/evidence_summary.md` when making broad claims
 - `{athlete-data-root}/wiki/log.md`
 
 ## Files To Update
@@ -53,15 +60,17 @@ usually the last 7-14 days.
 3. Summarize what happened: frequency, volume, long sessions, hard sessions,
    missed sessions, and subjective notes.
 4. Estimate easy/hard balance from workout type, tags, RPE, HR, pace, or notes.
-5. State what went well.
-6. State what looks risky, including load spikes, too much intensity, poor
+5. Interpret metrics conservatively using the data interpretation page when
+   device data is involved.
+6. State what went well.
+7. State what looks risky, including load spikes, too much intensity, poor
    recovery, soreness, illness, or injury flags.
-7. Explain what should affect next week.
-8. Decide whether any durable insight belongs in `{athlete-data-root}/wiki/insights/`.
-9. If creating an insight, include conclusion, evidence, planning implication,
+8. Explain what should affect next week.
+9. Decide whether any durable insight belongs in `{athlete-data-root}/wiki/insights/`.
+10. If creating an insight, include conclusion, evidence, planning implication,
    and date.
-10. Append a `review` entry to `{athlete-data-root}/wiki/log.md`.
-11. Show changed files before committing if asked to commit.
+11. Append a `review` entry to `{athlete-data-root}/wiki/log.md`.
+12. Show changed files before committing if asked to commit.
 
 ## Output Format
 

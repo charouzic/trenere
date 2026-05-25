@@ -103,6 +103,9 @@ Use trenere-review to review the last two weeks.
 Use trenere-plan to plan next week.
 ```
 
+For a fictional end-to-end example, see
+[`examples/minimal-flow/README.md`](examples/minimal-flow/README.md).
+
 ## Data Split
 
 Public core repo:
@@ -114,8 +117,11 @@ trenere/
   wiki/principles/
   wiki/workouts/
   wiki/programming/
+  wiki/races/
+  wiki/data/
   wiki/evidence/
   wiki/knowledge/
+  examples/
   templates/athlete-data/
 ```
 
