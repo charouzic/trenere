@@ -2,184 +2,294 @@
 
 Trenere is a local markdown-based endurance coaching wiki.
 
-It is not an app, backend, or AI coaching platform. It is a small repo of
-markdown files and agent workflows that help maintain coaching memory over time.
+It is for athletes who want a coding agent to remember training context over
+time without turning that memory into an app, database, dashboard, or hosted AI
+platform.
 
-V1 works with only a local folder, markdown files, a coding agent, pasted workout
-data, and git. No external service, install step, COROS access, GitHub remote, or
-Python environment is required.
-
-This repository is intended to be public-safe. Athlete-specific data should live
-in a separate private/local repo, by default:
+The basic loop is:
 
 ```text
-../trenere-athlete-data
+paste or fetch workouts -> import -> review -> plan -> commit
 ```
 
-## What Trenere Is
+V1 works with only:
 
-- A single-athlete coaching memory stored in markdown.
-- A lightweight set of agent skills for onboarding, workout import, review,
-  planning, and wiki linting.
-- A local git repo so meaningful changes can be reviewed and committed.
-- A public core that can be shared without athlete-specific history.
+- local folders
+- markdown files
+- a coding agent such as Codex
+- pasted workout data
+- git
+
+No backend, web app, install step, database, COROS account, GitHub remote, or
+Python environment is required.
+
+## What You Get
+
+- A public-safe core repo with agent skills and training knowledge.
+- A separate private athlete-data repo for profile, workouts, logs, plans, raw
+  imports, injury notes, and personal insights.
+- Codex skills for asking questions, onboarding, importing workouts, reviewing
+  training, planning weeks, linting the wiki, and optionally fetching COROS data.
+- Plain markdown files you can read, edit, diff, and commit.
 
 ## What Trenere Is Not
 
-- Not a custom MCP server.
-- Not a backend, database, web app, Streamlit app, or metrics engine.
-- Not COROS automation or GitHub automation.
-- Not a medical tool, diagnosis system, or replacement for professional care.
+- Not an app.
+- Not a backend.
+- Not a metrics engine.
+- Not a vector database.
+- Not COROS automation.
+- Not GitHub automation.
+- Not a doctor or a medical diagnosis tool.
 
-## Start Here
+## Repository Layout
 
-1. Open `AGENTS.md`.
-2. Read `wiki/index.md`.
-3. Create or connect a private athlete-data repo from `templates/athlete-data/`.
-4. Use `$trenere-ask` if you are unsure what to do next, or run
-   `/trenere-onboard` to create or update the athlete profile.
+Use two repos:
 
-## Public/Private Layout
+```text
+~/trenere/               public core, safe to publish
+~/trenere-athlete-data/  private athlete data, keep private or local-only
+```
 
-Public core repo:
+Public core:
 
 ```text
 trenere/
   .claude/skills/
+  AGENTS.md
+  README.md
   wiki/index.md
   wiki/knowledge/
   wiki/workouts/README.md
   templates/athlete-data/
 ```
 
-Private athlete-data repo:
+Private athlete data:
 
 ```text
 trenere-athlete-data/
   wiki/profile/
   wiki/log.md
-  wiki/workouts/YYYY-MM.md
+  wiki/workouts/
   wiki/blocks/
   wiki/insights/
   wiki/meta/
   raw/imports/
 ```
 
-Agents resolve private data in this order:
+The public repo should not contain athlete-specific data.
 
-1. `TRENERE_ATHLETE_DATA`
-2. ignored local pointer file `.trenere-athlete-data`
-3. sibling repo `../trenere-athlete-data`
+## Quick Start
 
-Do not commit athlete-specific data to the public core.
+Clone the public core:
 
-## Ask Trenere
+```bash
+git clone https://github.com/charouzic/trenere.git
+cd trenere
+```
 
-Use `/trenere-ask` as the general entrypoint when you are unsure, need help,
-want a training-load adjustment, or do not know which workflow to run.
+If you fork Trenere, use your fork URL instead.
 
-In Codex, invoke it as:
+Create the private athlete-data repo next to it:
+
+```bash
+cp -R templates/athlete-data ../trenere-athlete-data
+cd ../trenere-athlete-data
+git init
+git add .
+git commit -m "init: trenere athlete data scaffold"
+cd ../trenere
+```
+
+Point the public core at the private data repo:
+
+```bash
+printf '../trenere-athlete-data\n' > .trenere-athlete-data
+```
+
+`.trenere-athlete-data` is ignored by git.
+
+## Install The Codex Skills
+
+Codex reads installed skills from `~/.codex/skills`.
+
+From the public core repo:
+
+```bash
+mkdir -p ~/.codex/skills
+for d in .claude/skills/trenere-*; do
+  name="$(basename "$d")"
+  rm -rf "$HOME/.codex/skills/$name"
+  cp -R "$d" "$HOME/.codex/skills/$name"
+done
+```
+
+Restart Codex from the public core repo:
+
+```bash
+cd ~/trenere
+codex
+```
+
+Invoke skills with `$skill-name`, not slash commands:
 
 ```text
 Use $trenere-ask
 ```
 
-Examples:
+Codex TUI slash commands like `/help` are built in; custom Trenere skills use
+the `$trenere-*` form.
+
+## First Run
+
+Start with the general entrypoint:
 
 ```text
-Use $trenere-ask. I slept badly and have intervals planned. What should I do?
-Use $trenere-ask. I am not sure whether to import, review, or plan next.
-Use $trenere-ask. Does my current week look too hard?
+Use $trenere-ask. I am setting up Trenere for the first time. What should I do?
 ```
 
-## Run Onboarding
+Then run onboarding:
 
-Use `/trenere-onboard`.
+```text
+Use $trenere-onboard for minimal onboarding.
+```
 
-Minimal onboarding is enough for V1. Provide:
+Minimal onboarding asks only for:
 
 - current goal
 - current weekly volume
 - available training days
 - fixed constraints
 - known zones or rough easy/threshold efforts
-- current niggles/injury flags
+- current niggles or injury flags
 - recent race/event
 - last 2-4 weeks training summary
 
-Deep onboarding can happen later when there is more context.
+Unknown is fine. Trenere should not invent athlete-specific facts.
 
-## Import or Paste Workouts
+## Daily Or Weekly Use
 
-Use `/trenere-import`.
+Ask a general question:
 
-Supported V1 sources:
+```text
+Use $trenere-ask. I slept badly and have intervals planned. What should I do?
+```
 
-- manually pasted workout summaries
-- files placed under `{athlete-data-root}/raw/imports/`
-- optional read-only COROS MCP if available
+Import pasted workouts:
 
-If COROS is unavailable, continue with manual or file input. Workout entries live
-under the private athlete-data repo at `{athlete-data-root}/wiki/workouts/YYYY-MM.md`.
+```text
+Use $trenere-import.
 
-## Fetch From COROS
+Here are my workouts:
+[paste workout summaries]
+```
 
-Use `/trenere-coros-fetch` when you want to get read-only data from COROS MCP
-before importing, reviewing, or planning.
+Review recent training:
 
-Typical flow:
+```text
+Use $trenere-review to review the last two weeks.
+```
+
+Plan next week:
+
+```text
+Use $trenere-plan to plan next week.
+```
+
+Health-check the wiki:
+
+```text
+Use $trenere-lint.
+```
+
+## Optional COROS MCP
+
+Trenere does not require COROS.
+
+If you configure a read-only COROS MCP server in Codex, use:
 
 ```text
 Use $trenere-coros-fetch to fetch my COROS workouts from the past two weeks and stage them.
 Use $trenere-import to import the staged COROS workouts.
-Use $trenere-review to review recent training.
 ```
 
-If COROS MCP is available in Codex, use it only as a read-only source for
-existing training data.
+Keep COROS as read-only for V1. Do not depend on it for the core workflow.
 
-Optional COROS MCP local setup:
+## How The Two Repos Interact
+
+The public core resolves private athlete data in this order:
+
+1. `TRENERE_ATHLETE_DATA` environment variable
+2. `.trenere-athlete-data` local pointer file
+3. `../trenere-athlete-data`
+
+Example:
 
 ```text
-Suggested Codex MCP name: coros
-URL: choose the COROS regional MCP endpoint for the athlete
-Auth: OAuth, configured locally
-Mode: read-only import/analysis source
+Use $trenere-import
 ```
 
-## Weekly Review
+Reads public files from:
 
-Use `/trenere-review`.
+```text
+~/trenere/AGENTS.md
+~/trenere/wiki/index.md
+~/trenere/wiki/workouts/README.md
+```
 
-The review should summarize what happened, easy/hard balance, what went well,
-risk signals, what should affect next week, and whether any durable insight
-belongs in `{athlete-data-root}/wiki/insights/`.
+Writes private files to:
 
-## Plan Next Week
+```text
+~/trenere-athlete-data/wiki/workouts/YYYY-MM.md
+~/trenere-athlete-data/wiki/log.md
+~/trenere-athlete-data/wiki/meta/last-sync.md
+```
 
-Use `/trenere-plan`.
+## Git Workflow
 
-Plans should include a weekly goal, day-by-day schedule, session purpose,
-intensity guidance, fallback rules, and feedback to report after key sessions.
-
-## Commit Changes
-
-Use local git after meaningful changes:
+Commit public framework changes in `trenere`:
 
 ```bash
+cd ~/trenere
 git status --short
 git add .
-git commit -m "{skill}: {one-line summary} YYYY-MM-DD"
+git commit -m "trenere: improve workflow docs YYYY-MM-DD"
+git push
 ```
 
-Do not push unless explicitly requested. Do not commit secrets, auth tokens,
-private config, or accidental private dumps.
+Commit athlete-specific changes in `trenere-athlete-data`:
 
-Commit public workflow/template changes in `trenere`. Commit athlete-specific
-profile, workout, log, plan, insight, and raw import changes in
-`trenere-athlete-data`.
+```bash
+cd ~/trenere-athlete-data
+git status --short
+git add .
+git commit -m "trenere-import: import workouts YYYY-MM-DD"
+git push
+```
 
-## Deferred to V2
+Keep the athlete-data repo private or local-only.
+
+## Safety Boundary
+
+Trenere is not a doctor. If the athlete reports chest pain, unusual breathing
+restriction, fever, sharp worsening pain, neurological symptoms, or symptoms
+that persist/worsen, stop training and seek medical evaluation.
+
+Do not use Trenere to diagnose injuries or medical conditions.
+
+## Useful Files
+
+- `AGENTS.md` — canonical rules for agents.
+- `.claude/skills/trenere-ask/SKILL.md` — general entrypoint.
+- `.claude/skills/trenere-onboard/SKILL.md` — athlete profile setup.
+- `.claude/skills/trenere-import/SKILL.md` — workout import.
+- `.claude/skills/trenere-review/SKILL.md` — recent training review.
+- `.claude/skills/trenere-plan/SKILL.md` — next-week planning.
+- `.claude/skills/trenere-lint/SKILL.md` — wiki health check.
+- `.claude/skills/trenere-coros-fetch/SKILL.md` — optional read-only COROS fetch.
+- `templates/athlete-data/` — private athlete-data starter structure.
+
+## Deferred
 
 - custom MCP server
 - backend or database
