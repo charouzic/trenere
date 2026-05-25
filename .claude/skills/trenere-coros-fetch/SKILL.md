@@ -94,6 +94,33 @@ queries include:
 Do not assume every tool is available. If a requested data type is unavailable,
 say so and offer the closest available read-only alternative.
 
+## Original FIT File Workaround
+
+COROS MCP activity detail may omit laps, splits, intervals, and workout blocks.
+When block-level execution matters, try to preserve the original activity file.
+
+Known pattern:
+
+```text
+https://teameuapi.coros.com/activity/detail/download?labelId={labelId}&sportType={sportType}&fileType=4
+```
+
+That endpoint may require an authenticated COROS web token. If the endpoint
+returns a `fileUrl`, download that URL into:
+
+```text
+{athlete-data-root}/raw/imports/coros/fit/{labelId}.fit
+```
+
+If the athlete already knows the `fileUrl`, download it directly. Do not store
+access tokens, cookies, or personal COROS account IDs in the public core repo.
+If a personal id or token is needed for automation, keep it only in ignored
+private config under `{athlete-data-root}`.
+
+When a FIT file is available, inspect it for `lap`, `record`, `session`, and
+developer-data messages. Use FIT-derived lap/block data for execution review
+when available, and mark whether the granularity came from FIT rather than MCP.
+
 ## Steps
 
 1. Follow the session start routine in `AGENTS.md`.
@@ -117,7 +144,10 @@ say so and offer the closest available read-only alternative.
     - `/trenere-review` to analyze imported data
     - `/trenere-plan` when the fetched data is enough for planning context
     - `/trenere-import` only if staging succeeded but import could not be done
-13. Show changed files before committing if asked to commit.
+13. If the athlete asks about workout-block execution and a FIT file can be
+    downloaded, save it under `{athlete-data-root}/raw/imports/coros/fit/` and
+    extract lap/block summaries into the workout entry or staged notes.
+14. Show changed files before committing if asked to commit.
 
 ## Staged File Format
 
@@ -157,6 +187,7 @@ Return:
 - number of records or days returned
 - staged file path, if created
 - workout wiki file updated, if imported
+- FIT file path and lap/record counts, if downloaded
 - important missing fields or uncertainty
 - safety/fatigue flags noticed
 - recommended next skill
