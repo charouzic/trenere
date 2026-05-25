@@ -131,6 +131,28 @@ store access tokens, cookies, or personal COROS account IDs in the public core
 repo. If a personal id or token is needed for automation, keep it only in
 ignored private config under `{athlete-data-root}`.
 
+If the download endpoint requires COROS web authentication, read the token only
+from the local environment:
+
+```text
+COROS_ACCESS_TOKEN=<token>
+```
+
+Send it as the HTTP header:
+
+```text
+accesstoken: $COROS_ACCESS_TOKEN
+```
+
+Treat this as an optional supplement, not a V1 dependency. Do not hardcode the
+token in source, staged markdown, logs, shell history, or committed config. The
+token appears opaque rather than JWT-like, so do not infer expiry from its
+format. If COROS returns `401` or `403`, assume the token is expired or invalid,
+stop authenticated web calls, and ask the athlete to refresh authentication or
+provide a new token. If COROS login/storage metadata includes an explicit
+`expiresIn`, `expireTime`, `expiration`, `refreshToken`, or
+`tokenExpireTime`, record only the non-secret expiry fact in private sync notes.
+
 If the authenticated download endpoint is unavailable but a previously observed
 FIT `fileUrl` is known, it is acceptable to try that URL directly. If download
 fails, continue with MCP summary data and record that original-file download was
@@ -163,14 +185,18 @@ Known COROS web app concepts observed in the Training Hub bundle:
 - `targetType`: `2=time`, `4=heart`, `5=distance`, `6=load`
 - `intensityType`: `2=heart`, `3=pace`, `4=speed`, `6=power`, `7=cadence`,
   `11=RPE`
+- schedule query endpoint observed for planned workouts:
+  `/training/schedule/query?startDate=YYYYMMDD&endDate=YYYYMMDD&supportRestExercise=1`
 - plan/program detail endpoints used by the web app include
   `/training/plan/detail` and `/training/program/detail`
 
 Those web endpoints require authenticated COROS web access and are outside the
 read-only MCP contract unless the current environment already exposes them or
-the athlete supplies an authenticated response/export. Never store auth tokens,
-cookies, or session headers. If only MCP schedule summaries are available, stage
-the planned workout summary and explicitly mark target zones as `not provided`.
+the athlete supplies an authenticated response/export. If authenticated web
+calls are explicitly used, pass `COROS_ACCESS_TOKEN` as the `accesstoken` header
+and follow the token-handling rules above. Never store auth tokens, cookies, or
+session headers. If only MCP schedule summaries are available, stage the planned
+workout summary and explicitly mark target zones as `not provided`.
 
 When both planned targets and completed FIT/lap data are available, stage both
 sources and compare planned blocks to actual execution conservatively. If FIT
@@ -197,8 +223,11 @@ interval-by-interval comparison.
     label IDs, FIT download status, and FIT-derived lap summaries when available
     in the staged file.
 11. If planned target zones are requested, fetch and stage any available
-    schedule summaries and target fields. Mark target zones `not provided` when
-    MCP/web data does not expose them.
+    schedule summaries and target fields. Prefer MCP first. If richer planned
+    target data is needed and `COROS_ACCESS_TOKEN` is present, optionally call
+    the COROS web schedule/detail endpoints with that token in the `accesstoken`
+    header. Mark target zones `not provided` when MCP/web data does not expose
+    them.
 12. If the returned data is workout records and includes enough fields, import or
    update entries in `{athlete-data-root}/wiki/workouts/YYYY-MM.md` using the
    public workout format.
