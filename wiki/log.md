@@ -35,3 +35,11 @@ Checked index navigation, profile placeholders, injury notes, workout/import
 status, insight/block folders, and COROS sync notes. No contradictions, broken
 wiki links, orphan insight pages, stale zones, or unreflected injury flags found.
 Athlete onboarding and workout import remain not completed.
+
+## [2026-05-25] lint | Wiki health check
+
+Result: clean.
+
+- Finding: No contradictions, broken navigation links, orphan insights, stale
+  zones, or unreflected injury flags found.
+- Next: Run `trenere-onboard` before substantive coaching or planning.
