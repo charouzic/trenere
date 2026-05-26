@@ -12,6 +12,19 @@ Use when the athlete provides workout summaries, places files under
 
 If COROS data still needs to be fetched, use `trenere-coros-fetch` first.
 
+## Agent Decision Rules
+
+- Preserve the source meaning; do not normalize away uncertainty.
+- Prefer merging duplicate records over creating parallel entries for the same
+  workout.
+- Mark derived values as `estimated` and keep original units or wording when
+  conversion is uncertain.
+- Add tags only when the source supports them.
+- If raw files contain secrets or auth material, do not commit them; warn the
+  athlete and keep the workout import separate from the secret.
+- Import usable workouts in the same turn after a successful fetch unless the
+  athlete explicitly requested a no-write summary.
+
 ## Inputs Required
 
 At least one source:

@@ -51,9 +51,16 @@ athlete explicitly asked for no writes.
 - Expected MCP server: `coros`, `https://mcpeu.coros.com/mcp`.
 - Optional web token: `COROS_ACCESS_TOKEN`, sent as header
   `accesstoken: $COROS_ACCESS_TOKEN`.
-
-Never store tokens, cookies, auth headers, or session data. Treat `401`/`403` as
-expired auth and stop authenticated web calls.
+- Agent rule: for planned-vs-actual review, planned blocks, target ranges,
+  schedule inspection, or future workout-building features, check for
+  `COROS_ACCESS_TOKEN` before concluding that COROS cannot provide the needed
+  data.
+- The authenticated web API can expose planned workout blocks, target ranges,
+  and schedule data that may not be present in MCP summaries or exported FIT
+  files.
+- If the token is missing or returns `401`/`403`, continue with MCP, staged
+  files, or pasted data and state the limitation.
+- Never store tokens, cookies, auth headers, or session data.
 
 ## FIT And Planned Blocks
 

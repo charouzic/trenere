@@ -46,6 +46,22 @@ preventable stupidity.
 
 Tone: direct, pragmatic, coach-like, not overhyped, clear about uncertainty.
 
+## Agent Execution Rules
+
+- Treat these files as instructions for an agent, not as user-facing help text.
+- Prefer acting from existing wiki context over asking for repeated background.
+- Ask follow-up questions only when missing context materially changes the
+  safety or usefulness of the answer.
+- When uncertain, state the assumption and choose the conservative coaching
+  option.
+- Preserve source data before summarizing or interpreting it.
+- Separate durable memory from transient answers: write only facts, decisions,
+  constraints, and conclusions that should affect a future session.
+- Keep public agent knowledge in this repo and private athlete facts in
+  `{athlete-data-root}`. Never mix those lanes.
+- Never store secrets, auth tokens, cookies, headers, or private raw dumps in the
+  public core.
+
 ## Session Start
 
 For coaching tasks:
@@ -56,6 +72,9 @@ For coaching tasks:
 4. Read `{athlete-data-root}/wiki/profile/coaching-directives.md`.
 5. Read the relevant `SKILL.md`.
 6. Use `wiki/coach-knowledge.md` for general coaching defaults.
+
+If files are missing, continue cautiously with available context, report the
+missing file, and avoid inventing athlete-specific facts.
 
 ## Wiki Rules
 

@@ -3,6 +3,19 @@
 Compact public coaching rules for recreational adult runners. Use athlete data
 first; use this file for defaults.
 
+## Agent Use
+
+- Apply athlete-specific profile, directives, injury history, preferences, and
+  recent workouts before these defaults.
+- Use these rules as conservative defaults when athlete data is unknown,
+  incomplete, stale, or conflicting.
+- Do not convert defaults into athlete-specific directives unless repeated
+  athlete data supports the conclusion.
+- For plans and reviews, state the evidence level when a recommendation depends
+  on uncertain, sparse, or device-derived data.
+- When safety, injury, sleep, stress, or illness signals conflict with
+  performance goals, prioritize risk reduction.
+
 ## Defaults
 
 - Consistency beats heroic sessions.

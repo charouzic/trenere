@@ -10,6 +10,20 @@ description: Health-check the coaching wiki for contradictions, stale claims, mi
 Use before important planning, after many imports/reviews, or when the athlete
 asks whether the coaching memory is stale, inconsistent, or messy.
 
+## Agent Decision Rules
+
+- Lint for coaching impact: contradictions, stale claims, broken links,
+  unreflected injury flags, outdated zones, orphan insights, and patterns that
+  should become directives.
+- Make small obvious fixes when evidence is clear.
+- Do not resolve contradictions by inventing athlete facts; log unresolved items
+  and ask only if needed for current planning.
+- If private athlete data appears in public core, stop and report before making
+  commits.
+- Treat reusable workflow improvements as public self-improvement candidates;
+  treat athlete-specific conclusions as private memory.
+- Prioritize at most five findings by safety and planning impact.
+
 ## Inputs Required
 
 None. Optional focus: zones, injuries, plans, insights, index, or public core.

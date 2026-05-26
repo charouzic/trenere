@@ -10,6 +10,21 @@ description: Review recent training and decide what should influence future plan
 Use after workouts are imported, before planning, or when the athlete asks what
 recent training means.
 
+## Agent Decision Rules
+
+- Review recent training to decide what should change future planning, not to
+  praise or grade the athlete.
+- Separate observed facts, conservative interpretations, and action
+  implications.
+- Treat skipped sessions, extra unplanned volume, unusually hard easy days,
+  sleep/stress changes, and niggles as planning inputs.
+- Do not file durable insights unless the pattern is likely to matter in a later
+  plan.
+- If data is sparse or device metrics conflict with subjective notes, state the
+  uncertainty and avoid strong conclusions.
+- If planned-vs-actual review needs planned blocks or target ranges, route
+  through `trenere-coros-fetch` and check for `COROS_ACCESS_TOKEN`.
+
 ## Inputs Required
 
 - review window, if specified

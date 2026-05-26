@@ -11,6 +11,19 @@ Use when the athlete is unsure what to do, asks a coaching question, wants a
 load adjustment, asks whether Trenere learned anything, or needs routing to
 onboard, import, review, plan, lint, or COROS fetch.
 
+## Agent Decision Rules
+
+- Classify first: answer, route, update memory, fetch/import data, review, plan,
+  lint, or self-improve.
+- If a specialized Trenere skill matches the request and the athlete asked to
+  proceed, route to it and continue rather than only naming it.
+- Use existing wiki context before asking follow-ups.
+- Do not write files for ordinary Q&A or low-value observations.
+- For self-improvement, decide whether the learning is public agent knowledge or
+  private athlete memory before editing any file.
+- If external workout data is viewed or fetched, preserve/import it unless the
+  athlete explicitly requested no writes.
+
 ## Inputs Required
 
 - athlete question
@@ -70,6 +83,9 @@ the athlete explicitly asks for a no-write summary.
 - `trenere-review`: interpret recent training.
 - `trenere-plan`: plan or adjust a week.
 - `trenere-lint`: check wiki health.
+
+Routing priority: safety boundary first, then user intent, then missing data,
+then durable memory.
 
 ## Output Format
 

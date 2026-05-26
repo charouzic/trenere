@@ -10,6 +10,21 @@ description: Plan the next training week from athlete context, recent training, 
 Use for next-week planning, near-term schedules, or modifications to an existing
 plan.
 
+## Agent Decision Rules
+
+- Build the plan from constraints, recent training, recovery signals, and
+  directives before adding workouts.
+- Choose one primary weekly goal and make every session support or protect it.
+- Count hard sessions honestly: threshold, tempo, intervals, hills, races,
+  fast-finish long runs, and demanding trail long runs all count.
+- When context is missing, produce a cautious starter plan and name the missing
+  inputs instead of inventing fitness.
+- Do not cram missed workouts into the future week.
+- Include fallback rules that tell the athlete exactly when to reduce, swap, or
+  skip a session.
+- Write block files only for meaningful multi-week plans, not every ad hoc
+  schedule.
+
 ## Inputs Required
 
 - target week/date range

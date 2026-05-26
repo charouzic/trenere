@@ -10,6 +10,21 @@ description: Set up or update the athlete profile using minimal or optional deep
 Use when starting Trenere for an athlete or updating goals, constraints,
 preferences, zones/efforts, injury flags, or training background.
 
+## Agent Decision Rules
+
+- Capture minimal onboarding first; deep background is optional and should not
+  block a useful V1 profile.
+- Record only athlete-supplied or clearly sourced facts.
+- Use `unknown`, `not provided`, or `estimated` instead of filling gaps with
+  generic runner assumptions.
+- Put current state in `athlete.md`, standing preferences in `preferences.md`,
+  injury facts in `injury-history.md`, and durable rules in
+  `coaching-directives.md`.
+- Do not turn one-off preferences, guesses, or temporary constraints into
+  directives.
+- Apply the medical boundary before collecting more training detail if symptoms
+  indicate safety risk.
+
 ## Inputs Required
 
 Minimal onboarding:
