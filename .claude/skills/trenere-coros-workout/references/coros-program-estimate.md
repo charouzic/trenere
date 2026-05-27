@@ -22,6 +22,31 @@ accesstoken: $COROS_ACCESS_TOKEN
 content-type: application/json
 ```
 
+## Confirmed Workflow Summary
+
+- Use `COROS_ACCESS_TOKEN` only from the environment; never write it to disk.
+- Use `/training/schedule/query` for quick calendar inspection, but use
+  `/training/plan/detail` before writes because it includes `entities`.
+- `/training/program/estimate` estimates fields; it does not schedule a workout.
+- `/training/schedule/update` is the write endpoint for planned workout create,
+  update, and delete operations in an active plan.
+- Create uses a future-only plan-detail payload plus `versionObjects.status: 1`.
+- Update uses a future-only plan-detail payload plus `versionObjects.status: 2`.
+- Delete can use a minimal `versionObjects.status: 3` payload.
+- Always refetch plan detail after the write and verify the target date.
+- Avoid full-plan writes that include past immutable entries; COROS can reject
+  them with `17001: Record before today cannot be Operated`.
+
+## Version Object Status Codes
+
+Observed with `/training/schedule/update`:
+
+| Status | Meaning | Payload style |
+| --- | --- | --- |
+| `1` | create planned workout | future-only plan detail plus new entity/program |
+| `2` | update planned workout | future-only plan detail with modified entity/program |
+| `3` | delete planned workout | minimal `versionObjects` payload is enough |
+
 ## Top-Level Shape
 
 ```json
