@@ -10,6 +10,8 @@ athlete-data repo, defaulting to `../trenere-athlete-data`.
 - [Athlete Data Template](../templates/athlete-data/README.md) — private repo
   scaffold.
 - [Trenere Ask Skill](../.claude/skills/trenere-ask/SKILL.md) — front door.
+- [Trenere COROS Workout Skill](../.claude/skills/trenere-coros-workout/SKILL.md)
+  — build and publish structured workouts to COROS.
 
 ## Private Athlete Data
 
@@ -23,4 +25,6 @@ athlete-data repo, defaulting to `../trenere-athlete-data`.
 
 - Athlete onboarding: private repo dependent.
 - Recent workout import: private repo dependent.
-- Optional COROS MCP: use `trenere-coros-fetch`; V1 still works without COROS.
+- Optional COROS MCP: use `trenere-coros-fetch` for read-only data and
+  `trenere-coros-workout` for explicit workout creation; V1 still works without
+  COROS.

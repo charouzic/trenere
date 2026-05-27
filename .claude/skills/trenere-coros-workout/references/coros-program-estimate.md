@@ -1,0 +1,148 @@
+# COROS Program Estimate Reference
+
+Use this reference when building a payload for:
+
+```text
+POST https://teameuapi.coros.com/training/program/estimate
+```
+
+Header:
+
+```text
+accesstoken: $COROS_ACCESS_TOKEN
+content-type: application/json
+```
+
+## Top-Level Shape
+
+```json
+{
+  "entity": {
+    "happenDay": "YYYYMMDD",
+    "idInPlan": 17,
+    "sortNo": 0,
+    "dayNo": 0,
+    "sortNoInPlan": 0,
+    "sortNoInSchedule": 0
+  },
+  "program": {
+    "access": 1,
+    "authorId": "0",
+    "id": "0",
+    "idInPlan": 17,
+    "name": "Workout name",
+    "pbVersion": 2,
+    "sportType": 1,
+    "subType": 65535,
+    "type": 0,
+    "unit": 0,
+    "userId": "0",
+    "exercises": []
+  }
+}
+```
+
+Keep unknown static metadata from the observed payload unless a newer known-good
+payload proves otherwise. Avoid changing fields such as `sourceId`,
+`sourceUrl`, `poolLengthId`, or `pbVersion` without evidence.
+
+## Running Defaults
+
+- `program.sportType`: `1`
+- exercise `sportType`: `1`
+- equipment: `[1]`
+- `hrType`: `3`
+- `pbVersion`: `2`
+- `subType`: `65535`
+- target distance values are meters
+- target duration/rest values are seconds
+- pace/HR/power unit interpretation is not fully proven; preserve observed
+  values and verify in COROS after creation
+
+## Exercise Types
+
+Observed running payload roles:
+
+- `exerciseType: 1`: warm-up
+- `exerciseType: 2`: training/work interval
+- `exerciseType: 3`: cool-down
+- `exerciseType: 4`: recovery/rest inside a group
+- `isGroup: true`: repeat/group container
+
+The observed group pattern is:
+
+1. group container with `isGroup: true`, `id: groupId`, `sets: repeatCount`,
+   `restType`, and `restValue`
+2. child exercises with `groupId` set to the group container ID
+3. child exercises sorted in execution order
+
+## Target Types
+
+Observed values:
+
+- `targetType: 2`, `targetValue: 300`: distance target of 300 m
+- `restType: 3`, `restValue: 0`: no rest target on normal steps
+
+Treat other target/rest type mappings as unknown until verified from a known-good
+payload. If the athlete asks for duration-based steps and no mapping is known,
+draft the workout and ask for a sample or verify through COROS before posting.
+
+## Intensity Fields
+
+Observed custom intensity fields:
+
+```json
+{
+  "intensityCustom": 2,
+  "intensityDisplayUnit": 0,
+  "intensityMultiplier": 0,
+  "intensityPercent": 90500,
+  "intensityPercentExtend": 94480,
+  "intensityType": 2,
+  "intensityValue": 168,
+  "intensityValueExtend": 177,
+  "isDefaultAdd": 0,
+  "isIntensityPercent": true
+}
+```
+
+Use known athlete anchors conservatively. If encoding HR percentage, preserve the
+observed scale where `90500` appears to mean `90.500%`; mark this as inferred.
+Do not silently convert pace, HR, or power fields unless the mapping is verified.
+
+## Minimal Builder Rules
+
+- Generate stable numeric `id` values starting at `1`.
+- `sortNo` should reflect execution order.
+- Use the same `idInPlan` in `entity` and `program`.
+- Set `program.name`; do not leave it blank for user-created workouts.
+- Set `program.exercises` to include all executable steps and group containers.
+- Calculate `program.exerciseNum`, `duration`, `distance`, `targetValue`, and
+  `totalSets` only when the mapping is clear; otherwise leave observed-safe
+  defaults and rely on API estimation.
+- Keep `access: 1` on `program`; keep exercise `access: 0`.
+
+## Validation Checklist
+
+- `entity.happenDay` is exactly 8 digits.
+- all exercise IDs are unique.
+- every non-empty `groupId` points to an `isGroup: true` exercise ID.
+- every group child appears after its group container.
+- target units are explicit in the human summary.
+- intensity ranges are explicit and marked as HR, pace, power, RPE, or none.
+- no token, cookie, or auth header is written to disk.
+
+## Safe Curl Shape
+
+Use an environment token only:
+
+```sh
+curl -sS \
+  -H "content-type: application/json" \
+  -H "accesstoken: $COROS_ACCESS_TOKEN" \
+  -X POST \
+  --data @payload.json \
+  https://teameuapi.coros.com/training/program/estimate
+```
+
+Do not paste the token into commands, files, logs, or final answers.

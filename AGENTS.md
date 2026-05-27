@@ -91,6 +91,7 @@ missing file, and avoid inventing athlete-specific facts.
 - `trenere-ask`: front door and routing.
 - `trenere-onboard`: profile setup/update.
 - `trenere-coros-fetch`: optional read-only COROS retrieval.
+- `trenere-coros-workout`: build and publish structured workouts to COROS.
 - `trenere-import`: import pasted/staged workouts.
 - `trenere-review`: review recent training.
 - `trenere-plan`: plan next week.

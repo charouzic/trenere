@@ -140,7 +140,8 @@ Keep staged notes factual and compact.
 - FIT download fails: still stage/import MCP summaries.
 - Duplicates: merge missing fields; do not duplicate entries.
 - Medical symptoms: apply `AGENTS.md` safety boundary.
-- Write-to-COROS requests: decline; V1 is read-only.
+- Write-to-COROS workout requests: route to `trenere-coros-workout`; this skill
+  remains read-only.
 
 ## Git/Log/Index Update Rules
 
