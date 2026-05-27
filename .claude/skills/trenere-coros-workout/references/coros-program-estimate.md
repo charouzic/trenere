@@ -56,6 +56,10 @@ with added `entities`, `programs`, and `versionObjects` for the new workout. Do
 not include immutable records before today; COROS can reject the update with
 `17001: Record before today cannot be Operated`.
 
+For active-plan edits, use the same future-only plan-detail payload, modify the
+matching `program` and/or `entity`, and send `status: 2` in `versionObjects`.
+This has been verified for changing a planned workout name and overview.
+
 For active-plan deletion, a minimal update payload is enough when the entity
 identifiers are known:
 
@@ -186,6 +190,28 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
 - Refetch plan detail after deletion and verify the target date/program is gone.
 - Do not send the full plan for a simple delete; the minimal version-object
   payload avoids touching unrelated days.
+
+## Active Plan Update Notes
+
+- Fetch plan detail and resolve the target entity/program by date and name.
+- Keep only today-and-future editable entities/programs in the update payload.
+- Modify the matching program fields, such as `name`, `overview`, steps, or
+  targets.
+- Send `versionObjects` with `status: 2`, for example:
+
+```json
+[
+  {
+    "id": "19",
+    "labelId": null,
+    "planProgramId": "19",
+    "planId": "477504133849596203",
+    "status": 2
+  }
+]
+```
+
+- Refetch plan detail after update and verify the changed fields.
 
 ## Validation Checklist
 
