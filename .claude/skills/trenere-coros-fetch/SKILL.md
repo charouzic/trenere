@@ -67,6 +67,12 @@ athlete explicitly asked for no writes.
 - Preserve FIT when possible; it is preferred over TCX.
 - Known observed download endpoint:
   `https://teameuapi.coros.com/activity/detail/download?labelId={labelId}&sportType={sportType}&fileType=4`
+- The download endpoint may return JSON with `data.fileUrl` instead of FIT bytes
+  directly. When response `content-type` is JSON or body starts with `{`, parse
+  `data.fileUrl`, download that URL, and validate the result as FIT before
+  preserving it.
+- Validate FIT downloads by checking for `.FIT` magic at byte offset 8. Do not
+  preserve JSON/error bodies with a `.fit` extension.
 - Planned schedule endpoint observed:
   `https://teameuapi.coros.com/training/schedule/query?startDate=YYYYMMDD&endDate=YYYYMMDD&supportRestExercise=1`
 - Use MCP first to resolve date, `labelId`, and `sportType`; use the web token
