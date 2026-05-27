@@ -68,12 +68,22 @@ irrelevant private data.
 
 Read `references/coros-program-estimate.md` before building the POST payload.
 
-Observed create/estimate endpoint:
+Observed estimate endpoint:
 
 ```text
 POST https://teameuapi.coros.com/training/program/estimate
 Header: accesstoken: $COROS_ACCESS_TOKEN
 Body: JSON
+```
+
+This endpoint returns calculated fields such as distance, duration, and training
+load, but it does not attach a workout to the calendar by itself.
+
+Observed scheduling flow for an active plan:
+
+```text
+GET  https://teameuapi.coros.com/training/plan/detail?id={planId}&supportRestExercise=1
+POST https://teameuapi.coros.com/training/schedule/update
 ```
 
 Use `COROS_ACCESS_TOKEN` from the environment only. If it is missing, return a
@@ -92,9 +102,13 @@ invent or persist credentials.
    ranges.
 7. If not explicitly told to publish now, stop with the summary and draft
    payload and ask for confirmation.
-8. If publishing, POST with `COROS_ACCESS_TOKEN` from the environment.
-9. Report success/failure with status code and non-secret response summary.
-10. On success, append a compact private log entry.
+8. If publishing into an active plan, fetch the full plan detail, add only
+   today-and-future editable entities/programs, then POST to
+   `/training/schedule/update`.
+9. Verify creation by refetching plan detail or schedule data for the target
+   date.
+10. Report success/failure with status code and non-secret response summary.
+11. On success, append a compact private log entry.
 
 ## Output Format
 

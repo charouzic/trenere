@@ -6,6 +6,15 @@ Use this reference when building a payload for:
 POST https://teameuapi.coros.com/training/program/estimate
 ```
 
+Important: despite the original assumption, this endpoint estimates a program
+but does not attach it to the calendar. To schedule a workout in an active plan,
+fetch plan detail and submit an updated future-only plan payload:
+
+```text
+GET  https://teameuapi.coros.com/training/plan/detail?id={planId}&supportRestExercise=1
+POST https://teameuapi.coros.com/training/schedule/update
+```
+
 Header:
 
 ```text
@@ -41,6 +50,11 @@ content-type: application/json
   }
 }
 ```
+
+For active-plan scheduling, the update payload is the current plan detail object
+with added `entities`, `programs`, and `versionObjects` for the new workout. Do
+not include immutable records before today; COROS can reject the update with
+`17001: Record before today cannot be Operated`.
 
 Keep unknown static metadata from the observed payload unless a newer known-good
 payload proves otherwise. Avoid changing fields such as `sourceId`,
@@ -121,6 +135,27 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
   `totalSets` only when the mapping is clear; otherwise leave observed-safe
   defaults and rely on API estimation.
 - Keep `access: 1` on `program`; keep exercise `access: 0`.
+
+## Active Plan Scheduling Notes
+
+- Fetch plan detail, not only schedule query, because plan detail includes
+  `entities` needed for update.
+- Pick `idInPlan = maxIdInPlan + 1`.
+- Compute `dayNo` relative to `startDay` where start day is `0`.
+- Use `happenDay` for validation and human verification, but COROS mainly uses
+  `dayNo`/`idInPlan` in plan updates.
+- When copying an existing known-good workout, clear `program.id` and
+  `program.planId`, set the new `idInPlan`, and reset chart completion values.
+- Add a matching entity with the target `dayNo`, `happenDay`,
+  `sortNoInSchedule`, and `exerciseBarChart`.
+- Send `versionObjects` with the new ID, for example:
+
+```json
+[{ "id": "17", "status": 1, "type": 1 }]
+```
+
+- Refetch plan detail after update and verify the target date contains the new
+  entity/program.
 
 ## Validation Checklist
 
