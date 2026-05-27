@@ -79,7 +79,7 @@ the athlete explicitly asks for a no-write summary.
 
 - `trenere-onboard`: profile setup or update.
 - `trenere-coros-fetch`: get read-only COROS data.
-- `trenere-coros-workout`: build or publish structured workouts to COROS.
+- `trenere-coros-workout`: create, update, or delete planned workouts in COROS.
 - `trenere-import`: add pasted/staged workouts to the wiki.
 - `trenere-review`: interpret recent training.
 - `trenere-plan`: plan or adjust a week.

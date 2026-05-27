@@ -1,26 +1,27 @@
 ---
 name: trenere-coros-workout
-description: Build and publish structured running workouts to COROS from Trenere plans using the authenticated COROS web API.
+description: Create, schedule, update, or delete structured COROS workouts from Trenere plans using the authenticated COROS web API.
 ---
 
 # trenere-coros-workout
 
 ## When To Use
 
-Use when the athlete asks to create, build, push, publish, or schedule a COROS
-workout from a Trenere plan or from a described run session. This skill writes
-to COROS and must be treated differently from read-only COROS fetch.
+Use when the athlete asks to create, build, push, publish, schedule, update,
+move, remove, or delete a COROS workout from a Trenere plan or from a described
+run session. This skill writes to COROS and must be treated differently from
+read-only COROS fetch.
 
-Do not use for ordinary planning without COROS publication; use `trenere-plan`
-first when the workout itself is not yet decided.
+Do not use for ordinary planning without a COROS write; use `trenere-plan` first
+when the workout itself is not yet decided.
 
 ## Agent Decision Rules
 
 - Build the workout from athlete context, recent training, and directives before
   encoding COROS fields.
 - Prefer simple run workouts: warm-up, work blocks, recoveries, cool-down.
-- Show a human-readable workout summary before posting unless the user already
-  explicitly requested immediate creation.
+- Show a human-readable workout summary before posting/deleting unless the user
+  already explicitly requested the specific write action.
 - If the request is ambiguous, create a draft payload and ask for the missing
   workout-specific detail instead of posting.
 - Never store tokens, cookies, auth headers, response bodies with secrets, or
@@ -29,7 +30,7 @@ first when the workout itself is not yet decided.
 - Treat failed `401`/`403` as expired or missing auth; do not retry with stored
   credentials from files.
 - Preserve only compact, non-secret notes in Trenere logs when a COROS workout is
-  actually created.
+  actually created, changed, or deleted.
 
 ## Inputs Required
 
@@ -37,7 +38,7 @@ first when the workout itself is not yet decided.
 - workout name
 - sport: currently running only unless a reference for another sport is added
 - workout steps: target type, target value, intensity type/range, and repeats
-- whether to publish now or only draft
+- intended action: draft, publish, update, move, or delete
 
 Use wiki context when missing intensity anchors, but mark assumptions.
 
@@ -58,7 +59,7 @@ Use wiki context when missing intensity anchors, but mark assumptions.
 
 ## Files To Update
 
-- `{athlete-data-root}/wiki/log.md` only after successful COROS creation
+- `{athlete-data-root}/wiki/log.md` only after successful COROS write
 
 Do not write raw COROS request or response dumps. If debugging is necessary,
 stage a redacted, compact note only after removing auth headers, cookies, and
@@ -66,7 +67,8 @@ irrelevant private data.
 
 ## COROS API
 
-Read `references/coros-program-estimate.md` before building the POST payload.
+Read `references/coros-program-estimate.md` before building a create, update, or
+delete payload.
 
 Observed estimate endpoint:
 
@@ -86,6 +88,13 @@ GET  https://teameuapi.coros.com/training/plan/detail?id={planId}&supportRestExe
 POST https://teameuapi.coros.com/training/schedule/update
 ```
 
+Observed active-plan deletion flow:
+
+```text
+POST https://teameuapi.coros.com/training/schedule/update
+Body: {"versionObjects":[{"id":"17","planProgramId":"17","planId":"477504133849596203","status":3}],"pbVersion":2}
+```
+
 Use `COROS_ACCESS_TOKEN` from the environment only. If it is missing, return a
 draft payload and clear curl command shape with `$COROS_ACCESS_TOKEN`, but do not
 invent or persist credentials.
@@ -93,10 +102,10 @@ invent or persist credentials.
 ## Steps
 
 1. Follow the session start routine in `AGENTS.md`.
-2. Confirm this is a COROS write request, not just planning.
+2. Confirm the intended COROS write action: create, update, move, or delete.
 3. Review recent training, recovery risk, and directives if the workout still
    needs coaching judgment.
-4. Build a plain-language workout summary first.
+4. Build a plain-language action summary first.
 5. Convert the workout into COROS program payload fields using the reference.
 6. Validate date format, step ordering, group/repeat IDs, targets, and intensity
    ranges.
@@ -105,16 +114,18 @@ invent or persist credentials.
 8. If publishing into an active plan, fetch the full plan detail, add only
    today-and-future editable entities/programs, then POST to
    `/training/schedule/update`.
-9. Verify creation by refetching plan detail or schedule data for the target
+9. If deleting from an active plan, resolve the existing entity/program from
+   plan detail and POST a minimal `versionObjects` deletion payload.
+10. Verify the write by refetching plan detail or schedule data for the target
    date.
-10. Report success/failure with status code and non-secret response summary.
-11. On success, append a compact private log entry.
+11. Report success/failure with status code and non-secret response summary.
+12. On success, append a compact private log entry.
 
 ## Output Format
 
 - workout summary
 - target date
-- COROS action: `drafted`, `posted`, or `blocked`
+- COROS action: `drafted`, `posted`, `updated`, `deleted`, or `blocked`
 - payload path or inline compact payload when useful
 - validation notes
 - auth/API limitation, if any
@@ -124,9 +135,9 @@ invent or persist credentials.
 
 - Missing token: draft only.
 - Ambiguous date or workout structure: draft only and ask one concise follow-up.
-- Existing scheduled workout on that date: inspect schedule if possible; ask
-  before overwriting or duplicating.
-- Medical or injury flags: apply `AGENTS.md` safety boundary before posting.
+- Existing scheduled workout on that date: inspect schedule or plan detail; ask
+  before overwriting, duplicating, or deleting unless the target is explicit.
+- Medical or injury flags: apply `AGENTS.md` safety boundary before writing.
 - Non-running workout: draft in plain language unless a COROS field reference for
   that sport is available.
 
@@ -135,10 +146,10 @@ invent or persist credentials.
 Log format:
 
 ```md
-## [YYYY-MM-DD] coros-workout | COROS workout created
+## [YYYY-MM-DD] coros-workout | COROS workout changed
 
-Short notes: date, workout name, purpose, and any uncertainty. No tokens,
-headers, raw API dumps, or private response blobs.
+Short notes: action, date, workout name, purpose, and any uncertainty. No
+tokens, headers, raw API dumps, or private response blobs.
 ```
 
 Commit only meaningful public skill updates. Do not commit private athlete data

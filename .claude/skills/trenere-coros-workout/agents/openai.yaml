@@ -1,4 +1,4 @@
 interface:
   display_name: "Trenere COROS Workout"
-  short_description: "Build and publish COROS workouts"
-  default_prompt: "Use $trenere-coros-workout to build a structured running workout and publish it to COROS."
+  short_description: "Manage planned COROS workouts"
+  default_prompt: "Use $trenere-coros-workout to create, update, or delete a planned COROS workout."

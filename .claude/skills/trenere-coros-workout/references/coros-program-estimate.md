@@ -56,6 +56,23 @@ with added `entities`, `programs`, and `versionObjects` for the new workout. Do
 not include immutable records before today; COROS can reject the update with
 `17001: Record before today cannot be Operated`.
 
+For active-plan deletion, a minimal update payload is enough when the entity
+identifiers are known:
+
+```json
+{
+  "versionObjects": [
+    {
+      "id": "17",
+      "planProgramId": "17",
+      "planId": "477504133849596203",
+      "status": 3
+    }
+  ],
+  "pbVersion": 2
+}
+```
+
 Keep unknown static metadata from the observed payload unless a newer known-good
 payload proves otherwise. Avoid changing fields such as `sourceId`,
 `sourceUrl`, `poolLengthId`, or `pbVersion` without evidence.
@@ -157,6 +174,19 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
 - Refetch plan detail after update and verify the target date contains the new
   entity/program.
 
+## Active Plan Deletion Notes
+
+- Fetch plan detail first unless the user supplied all identifiers.
+- Identify the target by date/name and resolve `id` from entity `idInPlan`.
+- Resolve `planProgramId` from entity `planProgramId`.
+- Resolve `planId` from entity `planId`.
+- Send `status: 3` in `versionObjects` to mark the planned workout deleted.
+- Include `pbVersion: 2` unless current plan detail proves another required
+  value.
+- Refetch plan detail after deletion and verify the target date/program is gone.
+- Do not send the full plan for a simple delete; the minimal version-object
+  payload avoids touching unrelated days.
+
 ## Validation Checklist
 
 - `entity.happenDay` is exactly 8 digits.
@@ -178,6 +208,17 @@ curl -sS \
   -X POST \
   --data @payload.json \
   https://teameuapi.coros.com/training/program/estimate
+```
+
+Deletion curl shape:
+
+```sh
+curl -sS \
+  -H "content-type: application/json" \
+  -H "accesstoken: $COROS_ACCESS_TOKEN" \
+  -X POST \
+  --data '{"versionObjects":[{"id":"17","planProgramId":"17","planId":"477504133849596203","status":3}],"pbVersion":2}' \
+  https://teameuapi.coros.com/training/schedule/update
 ```
 
 Do not paste the token into commands, files, logs, or final answers.
