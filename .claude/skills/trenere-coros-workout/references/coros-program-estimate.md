@@ -30,12 +30,21 @@ content-type: application/json
 - `/training/program/estimate` estimates fields; it does not schedule a workout.
 - `/training/schedule/update` is the write endpoint for planned workout create,
   update, and delete operations in an active plan.
-- Create uses a future-only plan-detail payload plus `versionObjects.status: 1`.
+- Create is safest as one workout per request: send only the new entity, the new
+  program, and a complete `versionObjects.status: 1` entry. Including other
+  future workouts in the same create payload has been observed to produce messy
+  merged/default steps even when COROS returns success.
 - Update uses a future-only plan-detail payload plus `versionObjects.status: 2`.
-- Delete can use a minimal `versionObjects.status: 3` payload.
-- Always refetch plan detail after the write and verify the target date.
+- Delete can use a minimal `versionObjects.status: 3` payload, but delete one
+  workout per request and verify after each deletion.
+- Always refetch plan detail after each write and verify the target date,
+  workout name, duration, exercise count, repeat structure, and target ranges.
 - Avoid full-plan writes that include past immutable entries; COROS can reject
   them with `17001: Record before today cannot be Operated`.
+- If today advances, exclude records before the current date. A payload that was
+  valid yesterday can fail today if it still includes yesterday's entity.
+- The active plan end date is real operational context. Do not assume workouts
+  can be created past `endDay`; extension beyond `endDay` remains unverified.
 
 ## Version Object Status Codes
 
@@ -43,9 +52,25 @@ Observed with `/training/schedule/update`:
 
 | Status | Meaning | Payload style |
 | --- | --- | --- |
-| `1` | create planned workout | future-only plan detail plus new entity/program |
+| `1` | create planned workout | one new entity/program only, plus explicit version object |
 | `2` | update planned workout | future-only plan detail with modified entity/program |
-| `3` | delete planned workout | minimal `versionObjects` payload is enough |
+| `3` | delete planned workout | minimal `versionObjects` payload is enough; one workout at a time |
+
+For create, include all identifiers in the version object. Omitting
+`planProgramId` and `planId` has been observed to fail with `17004: Plan data is
+illegal`.
+
+```json
+[
+  {
+    "id": "29",
+    "planProgramId": "29",
+    "planId": "477504133849596203",
+    "status": 1,
+    "type": 1
+  }
+]
+```
 
 ## Top-Level Shape
 
@@ -76,10 +101,11 @@ Observed with `/training/schedule/update`:
 }
 ```
 
-For active-plan scheduling, the update payload is the current plan detail object
-with added `entities`, `programs`, and `versionObjects` for the new workout. Do
-not include immutable records before today; COROS can reject the update with
-`17001: Record before today cannot be Operated`.
+For active-plan scheduling, the update payload can use the current plan detail
+object as a shell, but for reliable create operations set `entities` and
+`programs` to contain only the new planned workout. Do not include immutable
+records before today; COROS can reject the update with `17001: Record before
+today cannot be Operated`.
 
 For active-plan edits, use the same future-only plan-detail payload, modify the
 matching `program` and/or `entity`, and send `status: 2` in `versionObjects`.
@@ -186,7 +212,8 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
 
 - Fetch plan detail, not only schedule query, because plan detail includes
   `entities` needed for update.
-- Pick `idInPlan = maxIdInPlan + 1`.
+- Pick `idInPlan = maxIdInPlan + 1` from the latest plan detail immediately
+  before each one-by-one create.
 - Compute `dayNo` relative to `startDay` where start day is `0`.
 - Use `happenDay` for validation and human verification, but COROS mainly uses
   `dayNo`/`idInPlan` in plan updates.
@@ -194,14 +221,35 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
   `program.planId`, set the new `idInPlan`, and reset chart completion values.
 - Add a matching entity with the target `dayNo`, `happenDay`,
   `sortNoInSchedule`, and `exerciseBarChart`.
-- Send `versionObjects` with the new ID, for example:
+- For create, send only this new entity/program in the payload arrays. Do not
+  include other future entities/programs in the same create request unless a
+  later verified workflow proves it safe.
+- Send a complete `versionObjects` entry with the new ID, `planProgramId`,
+  `planId`, `status: 1`, and `type: 1`, for example:
 
 ```json
-[{ "id": "17", "status": 1, "type": 1 }]
+[
+  {
+    "id": "17",
+    "planProgramId": "17",
+    "planId": "477504133849596203",
+    "status": 1,
+    "type": 1
+  }
+]
 ```
 
 - Refetch plan detail after update and verify the target date contains the new
-  entity/program.
+  entity/program with clean exercises. Example clean checks:
+  - simple easy run: expected 1-3 exercises, not a duplicated shell
+  - grouped strides: expected warm/easy step, one group container, work child,
+    recovery child, and cool-down
+  - flat fartlek: expected warm-up, repeated work/recovery child steps, and
+    cool-down
+  - strength/mobility: expected one strength exercise
+
+If the resulting program contains unexpected extra warm-up/main/cool-down steps,
+delete that workout immediately and rebuild the payload before continuing.
 
 ## Active Plan Deletion Notes
 
@@ -215,6 +263,8 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
 - Refetch plan detail after deletion and verify the target date/program is gone.
 - Do not send the full plan for a simple delete; the minimal version-object
   payload avoids touching unrelated days.
+- For multiple deletes, loop one ID at a time and verify absence after each.
+  Bulk deletion has been observed to fail with `17004: Plan data is illegal`.
 
 ## Active Plan Update Notes
 

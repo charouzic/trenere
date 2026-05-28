@@ -31,6 +31,12 @@ when the workout itself is not yet decided.
   credentials from files.
 - Preserve only compact, non-secret notes in Trenere logs when a COROS workout is
   actually created, changed, or deleted.
+- Prefer one-by-one writes. Bulk delete/create/update can leave the active plan
+  in a messy partial state or be rejected by COROS with generic plan-data
+  errors.
+- For creates, verify the resulting exercise list, not only the HTTP/API
+  success. COROS can return success while adding or merging unintended default
+  steps if the payload shape is wrong.
 
 ## Inputs Required
 
@@ -111,13 +117,15 @@ invent or persist credentials.
    ranges.
 7. If not explicitly told to publish now, stop with the summary and draft
    payload and ask for confirmation.
-8. If publishing into an active plan, fetch the full plan detail, add only
-   today-and-future editable entities/programs, then POST to
-   `/training/schedule/update`.
+8. If publishing into an active plan, fetch the full plan detail, create one
+   workout at a time, and POST only the new entity/program plus the required
+   create `versionObjects` entry to `/training/schedule/update`.
 9. If deleting from an active plan, resolve the existing entity/program from
-   plan detail and POST a minimal `versionObjects` deletion payload.
-10. Verify the write by refetching plan detail or schedule data for the target
-   date.
+   plan detail and POST one minimal `versionObjects` deletion payload per
+   workout.
+10. Verify each write by refetching plan detail for the target date and checking
+   name, duration, step count, repeat structure, and target ranges before
+   continuing.
 11. Report success/failure with status code and non-secret response summary.
 12. On success, append a compact private log entry.
 
@@ -137,6 +145,12 @@ invent or persist credentials.
 - Ambiguous date or workout structure: draft only and ask one concise follow-up.
 - Existing scheduled workout on that date: inspect schedule or plan detail; ask
   before overwriting, duplicating, or deleting unless the target is explicit.
+- Replacing a messy schedule: delete existing target workouts one by one and
+  verify each deletion before creating replacements one by one.
+- Active plan end date: if `plan.detail.endDay` is earlier than the requested
+  workout date, do not assume creates beyond the plan end will work; report that
+  the plan must be extended or a new plan created unless a verified extension
+  workflow exists.
 - Medical or injury flags: apply `AGENTS.md` safety boundary before writing.
 - Non-running workout: draft in plain language unless a COROS field reference for
   that sport is available.
