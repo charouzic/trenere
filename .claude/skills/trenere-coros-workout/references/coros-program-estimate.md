@@ -35,6 +35,10 @@ content-type: application/json
   future workouts in the same create payload has been observed to produce messy
   merged/default steps even when COROS returns success.
 - Update uses a future-only plan-detail payload plus `versionObjects.status: 2`.
+- Move/swap by directly mutating `happenDay`/`dayNo`, or by swapping program
+  contents between existing plan entries, has been observed to return `Plan data
+  is illegal.` Prefer create-and-verify on the target date, then delete the old
+  entry one by one.
 - Delete can use a minimal `versionObjects.status: 3` payload, but delete one
   workout per request and verify after each deletion.
 - Always refetch plan detail after each write and verify the target date,
@@ -272,6 +276,9 @@ delete that workout immediately and rebuild the payload before continuing.
 - Keep only today-and-future editable entities/programs in the update payload.
 - Modify the matching program fields, such as `name`, `overview`, steps, or
   targets.
+- Do not use update as the default move/swap mechanism. Direct `happenDay`/`dayNo`
+  mutation and workout-content swaps have been rejected by COROS with `Plan data
+  is illegal.` Use create-verify-delete instead.
 - Send `versionObjects` with `status: 2`, for example:
 
 ```json

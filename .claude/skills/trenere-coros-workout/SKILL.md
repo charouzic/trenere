@@ -34,6 +34,9 @@ when the workout itself is not yet decided.
 - Prefer one-by-one writes. Bulk delete/create/update can leave the active plan
   in a messy partial state or be rejected by COROS with generic plan-data
   errors.
+- For move/swap requests, prefer create-and-verify on the target date, then
+  delete the old entry one by one. Direct date/content swaps can be rejected as
+  illegal plan data.
 - For creates, verify the resulting exercise list, not only the HTTP/API
   success. COROS can return success while adding or merging unintended default
   steps if the payload shape is wrong.
@@ -120,14 +123,17 @@ invent or persist credentials.
 8. If publishing into an active plan, fetch the full plan detail, create one
    workout at a time, and POST only the new entity/program plus the required
    create `versionObjects` entry to `/training/schedule/update`.
-9. If deleting from an active plan, resolve the existing entity/program from
+9. For move/swap requests, create and verify the replacement workout on the
+   target date before deleting the old entry; avoid direct `happenDay`/`dayNo`
+   mutation unless a newer verified workflow proves it safe.
+10. If deleting from an active plan, resolve the existing entity/program from
    plan detail and POST one minimal `versionObjects` deletion payload per
    workout.
-10. Verify each write by refetching plan detail for the target date and checking
+11. Verify each write by refetching plan detail for the target date and checking
    name, duration, step count, repeat structure, and target ranges before
    continuing.
-11. Report success/failure with status code and non-secret response summary.
-12. On success, append a compact private log entry.
+12. Report success/failure with status code and non-secret response summary.
+13. On success, append a compact private log entry.
 
 ## Output Format
 
