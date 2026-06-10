@@ -170,12 +170,22 @@ The observed group pattern is:
 
 Observed values:
 
-- `targetType: 2`, `targetValue: 300`: distance target of 300 m
+- `targetType: 1`, `targetValue: 1500`: distance target of 1500 m
+- `targetType: 2`, `targetValue: 300`: duration target of 300 sec
 - `restType: 3`, `restValue: 0`: no rest target on normal steps
 
+Distance targets inside repeat groups need extra verification. On 2026-06-10 a
+`targetType: 1`, `targetValue: 1500` child step in a `3 x 1500 m` group still
+appeared to the athlete as an open/manual step on the watch, despite plan-detail
+verification showing the distance target. Do not treat plan-detail target fields
+alone as proof that the watch will auto-advance distance reps. For important
+distance-capped workouts, verify on the watch/app before use or choose a safer
+encoding that has been tested end-to-end.
+
 Treat other target/rest type mappings as unknown until verified from a known-good
-payload. If the athlete asks for duration-based steps and no mapping is known,
-draft the workout and ask for a sample or verify through COROS before posting.
+payload. If the athlete asks for distance-based or duration-based steps and no
+mapping is known, draft the workout and ask for a sample or verify through COROS
+before posting.
 
 ## Intensity Fields
 
@@ -298,6 +308,10 @@ delete that workout immediately and rebuild the payload before continuing.
 ## Validation Checklist
 
 - `entity.happenDay` is exactly 8 digits.
+- distance-capped steps use `targetType: 1` with `targetValue` in meters.
+- duration-capped steps use `targetType: 2` with `targetValue` in seconds.
+- distance-capped repeat groups are not considered fully verified until the
+  watch/app shows that the work step is distance-limited, not open/manual.
 - all exercise IDs are unique.
 - every non-empty `groupId` points to an `isGroup: true` exercise ID.
 - every group child appears after its group container.

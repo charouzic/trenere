@@ -40,6 +40,10 @@ when the workout itself is not yet decided.
 - For creates, verify the resulting exercise list, not only the HTTP/API
   success. COROS can return success while adding or merging unintended default
   steps if the payload shape is wrong.
+- For distance-capped repeats, verify more than plan-detail fields: the watch/app
+  must show the work step as distance-limited, not open/manual. A 2026-06-10
+  `3 x 1500 m` workout appeared open on the watch despite plan detail showing a
+  `targetType: 1`, `targetValue: 1500` child step.
 
 ## Inputs Required
 
@@ -132,6 +136,8 @@ invent or persist credentials.
 11. Verify each write by refetching plan detail for the target date and checking
    name, duration, step count, repeat structure, and target ranges before
    continuing.
+   For distance-capped repeats, do not count plan-detail verification alone as
+   end-to-end proof; verify watch/app behavior or mark the workout as unproven.
 12. Report success/failure with status code and non-secret response summary.
 13. On success, append a compact private log entry.
 
