@@ -47,8 +47,12 @@ content-type: application/json
   them with `17001: Record before today cannot be Operated`.
 - If today advances, exclude records before the current date. A payload that was
   valid yesterday can fail today if it still includes yesterday's entity.
-- The active plan end date is real operational context. Do not assume workouts
-  can be created past `endDay`; extension beyond `endDay` remains unverified.
+- The active plan end date is real operational context. A one-workout create has
+  been verified to extend the same plan shell beyond its previous `endDay` when
+  the payload sends only the new entity/program, sets `endDay` to the target
+  date, updates `totalDay`, increments `maxIdInPlan`/`maxPlanProgramId`, and
+  refetch verification confirms the target date. Do not bulk-extend without a
+  fresh verification.
 
 ## Version Object Status Codes
 
@@ -224,8 +228,12 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
 
 ## Active Plan Scheduling Notes
 
-- Fetch plan detail, not only schedule query, because plan detail includes
-  `entities` needed for update.
+- Fetch plan detail, not only schedule query, because plan detail usually
+  includes `entities` needed for update. If plan detail no longer returns
+  programs/entities after the visible plan end, recover a recent known-good
+  template from `/training/schedule/query?startDate=...&endDate=...`, then use a
+  one-workout create with the current plan shell and verify by querying the
+  target date.
 - Pick `idInPlan = maxIdInPlan + 1` from the latest plan detail immediately
   before each one-by-one create.
 - Compute `dayNo` relative to `startDay` where start day is `0`.
@@ -235,6 +243,9 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
   `program.planId`, set the new `idInPlan`, and reset chart completion values.
 - Add a matching entity with the target `dayNo`, `happenDay`,
   `sortNoInSchedule`, and `exerciseBarChart`.
+- For no-target warm-up, recovery, or cool-down duration steps, `intensityType:
+  0` with zero intensity fields has been verified to preserve duration-only
+  steps in schedule refetch.
 - For create, send only this new entity/program in the payload arrays. Do not
   include other future entities/programs in the same create request unless a
   later verified workflow proves it safe.
