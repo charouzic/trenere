@@ -49,8 +49,10 @@ athlete explicitly asked for no writes.
 
 - Preferred: configured COROS MCP tools in read-only mode.
 - Expected MCP server: `coros`, `https://mcpeu.coros.com/mcp`.
-- Optional web token: `COROS_ACCESS_TOKEN`, sent as header
-  `accesstoken: $COROS_ACCESS_TOKEN`.
+- MCP authentication is OAuth-managed by Codex. If COROS MCP returns `401`,
+  run `codex mcp login coros` and complete the browser authorization flow.
+- Optional direct web API token: `COROS_ACCESS_TOKEN`, sent to `teameuapi`
+  endpoints as header `accesstoken: $COROS_ACCESS_TOKEN`.
 - Agent rule: for planned-vs-actual review, planned blocks, target ranges,
   schedule inspection, or future workout-building features, check for
   `COROS_ACCESS_TOKEN` before concluding that COROS cannot provide the needed
