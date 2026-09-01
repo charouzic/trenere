@@ -148,7 +148,7 @@ payload proves otherwise. Avoid changing fields such as `sourceId`,
 - `hrType`: `3`
 - `pbVersion`: `2`
 - `subType`: `65535`
-- target distance values are meters
+- running distance-step values are centimeters (`meters * 100`)
 - target duration/rest values are seconds
 - pace/HR/power unit interpretation is not fully proven; preserve observed
   values and verify in COROS after creation
@@ -174,17 +174,25 @@ The observed group pattern is:
 
 Observed values:
 
-- `targetType: 1`, `targetValue: 1500`: distance target of 1500 m
+- `targetType: 1`, `targetValue: 0`: open/manual step
 - `targetType: 2`, `targetValue: 300`: duration target of 300 sec
+- `targetType: 5`, `targetValue: 100000`, `targetDisplayUnit: 1`: distance
+  target of 1.00 km
+- `targetType: 5`, `targetValue: 200000`, `targetDisplayUnit: 1`: distance
+  target of 2.00 km
 - `restType: 3`, `restValue: 0`: no rest target on normal steps
 
-Distance targets inside repeat groups need extra verification. On 2026-06-10 a
-`targetType: 1`, `targetValue: 1500` child step in a `3 x 1500 m` group still
-appeared to the athlete as an open/manual step on the watch, despite plan-detail
-verification showing the distance target. Do not treat plan-detail target fields
-alone as proof that the watch will auto-advance distance reps. For important
-distance-capped workouts, verify on the watch/app before use or choose a safer
-encoding that has been tested end-to-end.
+The running distance scale is centimeters: multiply meters by 100. The same
+scale appears in `program.distance`; for example, six 1 km work repetitions
+produce `distance: 600000`.
+
+This mapping was corrected and verified from athlete edits on 2026-09-01. The
+initial generated 1 km/2 km steps used `targetType: 1` with values `1000` and
+`2000`; plan detail retained those numbers, but COROS displayed the work steps
+as open/manual and schedule summaries reported no distance. After the athlete
+changed the children to `targetType: 5` with `100000`/`200000`, schedule
+summaries reported 6.00 km for 6 x 1 km, 8.00 km for 4 x 2 km, and 3.00 km for
+3 x 1 km. Do not infer semantics from a plausible-looking plan-detail value.
 
 Treat other target/rest type mappings as unknown until verified from a known-good
 payload. If the athlete asks for distance-based or duration-based steps and no
@@ -243,9 +251,12 @@ Do not silently convert pace, HR, or power fields unless the mapping is verified
   `program.planId`, set the new `idInPlan`, and reset chart completion values.
 - Add a matching entity with the target `dayNo`, `happenDay`,
   `sortNoInSchedule`, and `exerciseBarChart`.
-- For no-target warm-up, recovery, or cool-down duration steps, `intensityType:
-  0` with zero intensity fields has been verified to preserve duration-only
-  steps in schedule refetch.
+- For a fully open/manual running step, use `targetType: 1`, `targetValue: 0`,
+  and `intensityType: 0`; put the intended duration in the workout name or
+  overview if the athlete will stop it manually.
+- For no-intensity warm-up, recovery, or cool-down duration steps, use
+  `targetType: 2` with seconds plus `intensityType: 0` and zero intensity
+  fields.
 - For create, send only this new entity/program in the payload arrays. Do not
   include other future entities/programs in the same create request unless a
   later verified workflow proves it safe.
@@ -319,8 +330,11 @@ delete that workout immediately and rebuild the payload before continuing.
 ## Validation Checklist
 
 - `entity.happenDay` is exactly 8 digits.
-- distance-capped steps use `targetType: 1` with `targetValue` in meters.
+- distance-capped running steps use `targetType: 5`, `targetDisplayUnit: 1`,
+  and `targetValue = meters * 100`.
 - duration-capped steps use `targetType: 2` with `targetValue` in seconds.
+- schedule refetch reports aggregate distance equal to repeat count times the
+  work-step distance; a missing distance is a failed verification.
 - distance-capped repeat groups are not considered fully verified until the
   watch/app shows that the work step is distance-limited, not open/manual.
 - all exercise IDs are unique.
