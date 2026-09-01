@@ -54,20 +54,23 @@ Use `trenere-ask` when unsure. Use `trenere-lint` for wiki health. Use
 
 Basic Trenere use does not require COROS. Agents should treat COROS as optional
 and read-only unless a specific skill says otherwise. COROS MCP can fetch
-workout records, but some useful COROS data is only available through the web API
-when `COROS_ACCESS_TOKEN` is configured.
+workout records, but some useful COROS data is only available through the web
+API. The `trenere-coros-workout` skill includes a macOS Keychain-backed
+`coros-auth` wrapper that stores only a password-derived login hash and can
+obtain a memory-only token automatically; an inherited `COROS_ACCESS_TOKEN`
+remains a fallback.
 
 Agent rule: when the task involves planned-vs-actual workout review, planned
 blocks, target ranges, schedule inspection, or future workout-building features,
-check whether `COROS_ACCESS_TOKEN` is available before concluding that COROS does
-not expose the needed data. The authenticated web API can expose planned workout
-blocks, target ranges, and schedule data that may not be present in MCP summaries
-or exported FIT files.
+check whether `COROS_ACCESS_TOKEN` or the Keychain-backed wrapper is available
+before concluding that COROS does not expose the needed data. The authenticated
+web API can expose planned workout blocks, target ranges, and schedule data that
+may not be present in MCP summaries or exported FIT files.
 
-If the token is missing or returns `401`/`403`, continue with MCP, staged files,
-or pasted data and state the limitation. Keep tokens outside the repo, for
-example in a local shell env file, and never commit token values, cookies, auth
-headers, or session data.
+If the token is missing or returns `401`/`403` or COROS result `1019`, use the
+Keychain-backed wrapper once when configured. Otherwise continue with MCP,
+staged files, or pasted data and state the limitation. Never commit token
+values, cookies, auth headers, credentials, or session data.
 
 ## Public vs Private
 

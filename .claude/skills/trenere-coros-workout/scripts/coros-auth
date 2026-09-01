@@ -1,0 +1,238 @@
+#!/bin/sh
+
+set -eu
+
+COROS_AUTH_BASE_URL="${COROS_AUTH_BASE_URL:-https://teameuapi.coros.com}"
+COROS_SECURITY_BIN="${COROS_SECURITY_BIN:-/usr/bin/security}"
+COROS_CURL_BIN="${COROS_CURL_BIN:-$(command -v curl || true)}"
+COROS_JQ_BIN="${COROS_JQ_BIN:-$(command -v jq || true)}"
+COROS_MD5_BIN="${COROS_MD5_BIN:-$(command -v md5 || command -v md5sum || true)}"
+
+EMAIL_SERVICE="trenere-coros-email"
+PASSWORD_HASH_SERVICE="trenere-coros-password-md5"
+DEFAULT_ACCOUNT="default"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  coros-auth setup
+  coros-auth status
+  coros-auth exec -- command [args...]
+
+setup
+  Store the COROS email and password-derived login hash in macOS Keychain, then
+  verify login. Run this once from an interactive Terminal. The password is
+  read with terminal echo disabled and is not stored or written to history.
+
+status
+  Report whether the inherited environment token works and whether Keychain
+  credentials are configured. Never prints credentials or tokens.
+
+exec
+  Reuse a valid COROS_ACCESS_TOKEN when available. If it is missing or COROS
+  returns result 1019, log in using Keychain credentials and run the command
+  with a fresh memory-only COROS_ACCESS_TOKEN.
+EOF
+}
+
+die() {
+  printf 'coros-auth: %s\n' "$*" >&2
+  exit 1
+}
+
+require_tools() {
+  [ -x "$COROS_SECURITY_BIN" ] || die "macOS security CLI not found"
+  [ -n "$COROS_CURL_BIN" ] && [ -x "$COROS_CURL_BIN" ] || die "curl not found"
+  [ -n "$COROS_JQ_BIN" ] && [ -x "$COROS_JQ_BIN" ] || die "jq not found"
+}
+
+require_md5() {
+  [ -n "$COROS_MD5_BIN" ] && [ -x "$COROS_MD5_BIN" ] || die "md5 or md5sum not found"
+}
+
+keychain_has() {
+  "$COROS_SECURITY_BIN" find-generic-password -s "$1" -a "$2" >/dev/null 2>&1
+}
+
+keychain_read() {
+  "$COROS_SECURITY_BIN" find-generic-password -w -s "$1" -a "$2" 2>/dev/null
+}
+
+keychain_configured() {
+  keychain_has "$EMAIL_SERVICE" "$DEFAULT_ACCOUNT" || return 1
+  account=$(keychain_read "$EMAIL_SERVICE" "$DEFAULT_ACCOUNT") || return 1
+  [ -n "$account" ] || return 1
+  keychain_has "$PASSWORD_HASH_SERVICE" "$account"
+}
+
+md5_value() {
+  if [ "$(basename "$COROS_MD5_BIN")" = "md5sum" ]; then
+    printf '%s' "$1" | "$COROS_MD5_BIN" | awk '{print $1}'
+  else
+    printf '%s' "$1" | "$COROS_MD5_BIN" -q
+  fi
+}
+
+probe_token() {
+  token_to_probe=$1
+  probe_day=$(date +%Y%m%d)
+
+  probe_response=$(
+    "$COROS_CURL_BIN" -sS --connect-timeout 10 --max-time 20 \
+      -H "accesstoken: $token_to_probe" \
+      "$COROS_AUTH_BASE_URL/training/schedule/query?startDate=$probe_day&endDate=$probe_day&supportRestExercise=1"
+  ) || return 2
+
+  probe_result=$(printf '%s' "$probe_response" | "$COROS_JQ_BIN" -r '.result // empty' 2>/dev/null) || return 2
+  unset probe_response
+
+  [ "$probe_result" = "0000" ] && return 0
+  [ "$probe_result" = "1019" ] && return 1
+  return 2
+}
+
+login_with_keychain() {
+  COROS_AUTH_TOKEN=""
+  keychain_configured || die "Keychain credentials are not configured; run 'coros-auth setup' in Terminal"
+
+  login_email=$(keychain_read "$EMAIL_SERVICE" "$DEFAULT_ACCOUNT") \
+    || die "could not read COROS email from Keychain"
+  login_password_hash=$(keychain_read "$PASSWORD_HASH_SERVICE" "$login_email") \
+    || die "could not read COROS login hash from Keychain"
+
+  login_payload=$(
+    COROS_LOGIN_ACCOUNT="$login_email" COROS_LOGIN_PASSWORD_HASH="$login_password_hash" \
+      "$COROS_JQ_BIN" -nc \
+      '{account: env.COROS_LOGIN_ACCOUNT, accountType: 2, pwd: env.COROS_LOGIN_PASSWORD_HASH}'
+  )
+  unset login_password_hash login_email
+
+  login_response=$(
+    printf '%s' "$login_payload" | "$COROS_CURL_BIN" -sS --connect-timeout 10 --max-time 30 \
+      -H 'content-type: application/json' \
+      -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/145 Safari/537.36' \
+      --data-binary @- \
+      "$COROS_AUTH_BASE_URL/account/login"
+  ) || die "COROS login request failed"
+  unset login_payload
+
+  login_result=$(printf '%s' "$login_response" | "$COROS_JQ_BIN" -r '.result // empty' 2>/dev/null) \
+    || die "COROS login returned invalid JSON"
+  login_message=$(printf '%s' "$login_response" | "$COROS_JQ_BIN" -r '.message // "unknown error"' 2>/dev/null) \
+    || login_message="unknown error"
+
+  if [ "$login_result" != "0000" ]; then
+    unset login_response
+    die "COROS login failed ($login_result: $login_message)"
+  fi
+
+  COROS_AUTH_TOKEN=$(printf '%s' "$login_response" | "$COROS_JQ_BIN" -r '.data.accessToken // empty' 2>/dev/null)
+  unset login_response login_message login_result
+  [ -n "$COROS_AUTH_TOKEN" ] || die "COROS login succeeded without an access token"
+}
+
+setup_keychain() {
+  [ -t 0 ] || die "setup must be run from an interactive Terminal"
+  require_md5
+
+  printf 'COROS account email: '
+  IFS= read -r setup_email
+  [ -n "$setup_email" ] || die "email is required"
+
+  "$COROS_SECURITY_BIN" add-generic-password -U \
+    -a "$DEFAULT_ACCOUNT" -s "$EMAIL_SERVICE" -w "$setup_email" >/dev/null
+
+  printf 'COROS account password: '
+  setup_stty=$(stty -g)
+  trap 'stty "$setup_stty"' 0 1 2 15
+  stty -echo
+  IFS= read -r setup_password
+  stty "$setup_stty"
+  trap - 0 1 2 15
+  printf '\n'
+  [ -n "$setup_password" ] || die "password is required"
+  setup_password_hash=$(md5_value "$setup_password")
+  unset setup_password
+
+  "$COROS_SECURITY_BIN" add-generic-password -U \
+    -a "$setup_email" -s "$PASSWORD_HASH_SERVICE" -w "$setup_password_hash" >/dev/null
+  unset setup_email setup_password_hash setup_stty
+
+  login_with_keychain
+  unset COROS_AUTH_TOKEN
+  printf '%s\n' 'COROS login verified. Future Trenere writes can refresh authentication automatically.'
+}
+
+status_report() {
+  if [ -n "${COROS_ACCESS_TOKEN:-}" ]; then
+    if probe_token "$COROS_ACCESS_TOKEN"; then
+      printf '%s\n' 'environment_token=valid'
+    else
+      probe_status=$?
+      if [ "$probe_status" -eq 1 ]; then
+        printf '%s\n' 'environment_token=invalid'
+      else
+        printf '%s\n' 'environment_token=unverifiable'
+      fi
+    fi
+  else
+    printf '%s\n' 'environment_token=missing'
+  fi
+
+  if keychain_configured; then
+    printf '%s\n' 'keychain_credentials=configured'
+  else
+    printf '%s\n' 'keychain_credentials=missing'
+  fi
+  printf '%s\n' 'token_expiry=opaque_not_encoded'
+}
+
+exec_with_auth() {
+  [ "$#" -gt 0 ] || die "exec requires a command"
+
+  COROS_AUTH_TOKEN=""
+  if [ -n "${COROS_ACCESS_TOKEN:-}" ]; then
+    if probe_token "$COROS_ACCESS_TOKEN"; then
+      COROS_AUTH_TOKEN=$COROS_ACCESS_TOKEN
+    else
+      probe_status=$?
+      [ "$probe_status" -eq 1 ] \
+        || die "could not verify the inherited COROS token; refusing an automatic login retry"
+    fi
+  fi
+
+  if [ -z "$COROS_AUTH_TOKEN" ]; then
+    login_with_keychain
+  fi
+
+  COROS_ACCESS_TOKEN=$COROS_AUTH_TOKEN
+  export COROS_ACCESS_TOKEN
+  unset COROS_AUTH_TOKEN
+  exec "$@"
+}
+
+require_tools
+
+command_name=${1:-help}
+case "$command_name" in
+  setup)
+    [ "$#" -eq 1 ] || die "setup takes no arguments"
+    setup_keychain
+    ;;
+  status)
+    [ "$#" -eq 1 ] || die "status takes no arguments"
+    status_report
+    ;;
+  exec)
+    shift
+    [ "${1:-}" = "--" ] && shift
+    exec_with_auth "$@"
+    ;;
+  help|-h|--help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac

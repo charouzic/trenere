@@ -25,10 +25,15 @@ when the workout itself is not yet decided.
 - If the request is ambiguous, create a draft payload and ask for the missing
   workout-specific detail instead of posting.
 - Never store tokens, cookies, auth headers, response bodies with secrets, or
-  session data.
-- Never post to COROS without an available `COROS_ACCESS_TOKEN`.
-- Treat failed `401`/`403` as expired or missing auth; do not retry with stored
-  credentials from files.
+  session data. Never print or paste a token into a command.
+- Never post to COROS without an available `COROS_ACCESS_TOKEN` in the current
+  process or the `coros-auth` wrapper supplying one to its child process.
+- Prefer the `scripts/coros-auth` wrapper. It can keep the COROS email and
+  password-derived login hash in macOS Keychain and obtain a memory-only token
+  when the inherited token is missing or COROS returns result `1019`.
+- Treat failed `401`/`403` or COROS result `1019` as expired or missing auth.
+  Attempt at most one Keychain-backed login through the wrapper; do not retry
+  with credentials from ordinary files.
 - Preserve only compact, non-secret notes in Trenere logs when a COROS workout is
   actually created, changed, or deleted.
 - Prefer one-by-one writes. Bulk delete/create/update can leave the active plan
@@ -108,8 +113,36 @@ POST https://teameuapi.coros.com/training/schedule/update
 Body: {"versionObjects":[{"id":"17","planProgramId":"17","planId":"477504133849596203","status":3}],"pbVersion":2}
 ```
 
-Use `COROS_ACCESS_TOKEN` from the environment only. If it is missing, return a
-draft payload and clear curl command shape with `$COROS_ACCESS_TOKEN`, but do not
+The Training Hub token is a 32-character opaque value. It contains no readable
+issued-at or expiry timestamp. A current maintained COROS client conservatively
+treats web tokens as having a 24-hour TTL, while direct observations show that
+copied browser tokens can be rejected within several days. Do not infer a longer
+lifetime from a successful call.
+
+Prefer the auth wrapper for all direct web API commands:
+
+```sh
+.claude/skills/trenere-coros-workout/scripts/coros-auth exec -- \
+  sh -c 'curl -sS -H "accesstoken: $COROS_ACCESS_TOKEN" ...'
+```
+
+The wrapper first probes an inherited `COROS_ACCESS_TOKEN`. On result `1019`, it
+logs in at `/account/login` using macOS Keychain credentials and supplies the
+fresh token only to the child process. It never stores the account password and
+never writes or displays the token.
+
+One-time setup must be run by the athlete in an interactive Terminal so the
+password is read with terminal echo disabled rather than through chat or shell
+history:
+
+```sh
+cd /path/to/trenere
+.claude/skills/trenere-coros-workout/scripts/coros-auth setup
+```
+
+If the wrapper is unavailable or Keychain credentials are not configured, use
+`COROS_ACCESS_TOKEN` from the environment only. If neither route is available,
+return a draft payload and clear command shape with `$COROS_ACCESS_TOKEN`; do not
 invent or persist credentials.
 
 ## Steps
@@ -138,8 +171,11 @@ invent or persist credentials.
    continuing.
    For distance-capped repeats, do not count plan-detail verification alone as
    end-to-end proof; verify watch/app behavior or mark the workout as unproven.
-12. Report success/failure with status code and non-secret response summary.
-13. On success, append a compact private log entry.
+12. If COROS returns `1019`, rerun the request once through `coros-auth` when
+    Keychain credentials are configured. Do not loop login or write the fresh
+    token anywhere.
+13. Report success/failure with status code and non-secret response summary.
+14. On success, append a compact private log entry.
 
 ## Output Format
 
@@ -153,7 +189,7 @@ invent or persist credentials.
 
 ## Edge Cases
 
-- Missing token: draft only.
+- Missing token: use `coros-auth` when configured; otherwise draft only.
 - Ambiguous date or workout structure: draft only and ask one concise follow-up.
 - Existing scheduled workout on that date: inspect schedule or plan detail; ask
   before overwriting, duplicating, or deleting unless the target is explicit.
